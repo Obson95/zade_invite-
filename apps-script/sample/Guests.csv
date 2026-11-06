@@ -1,0 +1,3 @@
+guest_id,guest_name,email,invite_token_hash,invite_status,sent_at,last_error,rsvp_status,party_size,rsvp_at,notes,max_party_size,guest_message,dietary_notes
+,Your Name (test row),you@example.com,,,,,,,,Send yourself a real test first,2,,
+,Example Guest,guest@example.com,,,,,,,,,,,

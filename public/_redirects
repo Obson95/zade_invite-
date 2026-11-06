@@ -1,0 +1,2 @@
+# Single-page app fallback (real files and /.netlify/functions/* are served first)
+/*    /index.html   200
