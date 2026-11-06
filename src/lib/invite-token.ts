@@ -36,7 +36,10 @@ export function readInviteToken(): InviteTokenState {
   if (raw === null || raw === "") return { kind: "none" };
 
   const t = raw.trim().toLowerCase();
-  if (t === "preview") return { kind: "preview" };
+  if (t === "preview") {
+    try { sessionStorage.setItem(KEY, t); } catch { /* preview remains in memory */ }
+    return { kind: "preview" };
+  }
   if (!TOKEN_RE.test(t)) return { kind: "invalid" };
   try {
     sessionStorage.setItem(KEY, t);

@@ -1,34 +1,33 @@
-# Birthday invitation update
+# Zade’s invitation: stationery redesign
 
-The original archive was extracted to `zade-invite`. The design follows the supplied `Zade_1_inspo .PNG`: royal blue, gold, clouds, balloons, a crown, and family portraits. The reference image itself is not shipped as a website asset.
+The current design follows `zade-invite-redesign-prompt.md`, with the photo treatment informed by `Zade_1_inspo .PNG`. The earlier animated blue-and-gold design remains in Git history at `87bde26`.
 
-## Changes
+## Before / after
 
-- Responsive two-column desktop hero and stacked mobile invitation.
-- Gold-framed family photo and gently floating circular portrait of Zade.
-- Large crowned first-birthday heading, ribbon, invitation copy, and RSVP/details links.
-- Drifting confetti and clouds, floating balloons, sparkles, entrance animation, and existing section reveals.
-- Pause control for continuous hero animations; reduced-motion preference respected.
-- Wider event details layout and photo gallery with keepsake-style framing.
-- Removed the development-only configuration banner from the guest-facing layout.
+| Section | Before | After |
+| --- | --- | --- |
+| Main invitation | Family photo in a gold arch; Zade in a smaller circle; shiny number and ribbon | Zade is the largest image, a full standing cutout directly on cream paper, without a frame. Script name, serif birthday line, small drawn crown. |
+| Background and motion | Blue gradients, floating balloons, sparkles, confetti, glowing buttons | Textured off-white paper, navy ink, antique gold rules, one soft blue accent; gentle fades only, respecting reduced motion. |
+| Event details | Rounded cards and icon badges | Left-aligned heading and a ruled list, with date, time, venue/address and RSVP deadline shown as `[TBD]` until set. Calendar and map links remain available when configured. |
+| First year | No editable timeline | Four clearly marked memory slots in `src/config/personal.ts`. These are prompts for family memories, not claims about milestones already reached. |
+| Photos | Three gold-framed images | Taped paper prints: two clearly labeled newborn/first-year placeholders and an existing photo of Zade. Replace the `src` fields in `personal.ts` with real photos. |
+| Family | Primary hero image | A smaller family photo alongside a personal note, Creole welcome, and editable `Obson & [wife’s name]` sign-off. |
+| RSVP | Form at the bottom of the home page, confetti on success | Dedicated `/rsvp` page with a bordered reply card, labels, navy “Send RSVP” button, plain choices, quiet confirmation, and a return link. |
 
-## Review findings and verification
+## Behavior retained
 
-Event date, time, timezone, venue/address, RSVP deadline, and guest limit are unset in `src/config/event.ts`. The site retains its coming-soon labels. The sample date and venue on the inspiration were not assumed to be real party details.
+Public/personal invitations, preview mode, form validation, duplicate-submission guard, existing reply edits, guest limits, dietary field, deadline checks, existing Netlify functions and Apps Script sources, OG image, music option, map/calendar links, and real countdown remain. Preview mode is now retained when moving to the RSVP page or reloading it. Internal navigation preserves the in-memory invitation state and browser back/forward navigation. Netlify’s existing SPA fallback serves direct `/rsvp` visits.
 
-Apps Script, Netlify functions, and submission logic are unchanged. Live RSVP submissions require their existing backend configuration. For the existing non-submitting form preview use `?invite=preview`.
+The Apps Script connection is still pending setup; no live submission verification is claimed.
 
-Local image references, anchor targets, CSS brace balance, and preservation of backend files were checked. Full type checking, production build, tests, and browser QA remain unverified: the local environment runs Node 16.20.2 and npm installation failed with ENOTFOUND for registry.npmjs.org. Build and test attempts therefore could not find tsc or vitest.
+## Image asset
 
-## Next steps for Netlify
+`public/images/zade-cutout.png` was created with the built-in imagegen tool using the existing standing photo as the edit target. The original photo is retained. The generated PNG has an alpha channel. Review the likeness and cutout edges with the family before final invitations.
 
-Use Node 22.12 or newer (Node 22 is configured in netlify.toml). From this folder run:
+Prompt: “Use case: background-extraction. Edit target: supplied standing photograph of Zade. Remove ONLY the entire room, door, walls, floor and background. Produce a clean photographic cutout of the exact same child on a truly transparent alpha background. Preserve his exact identity, face, expression, skin tone, curls, hands, body proportions, light blue vest and trousers, white shirt and white shoes, all pose and clothing details. Do not beautify, restyle, redraw, add objects, crown, frame, border, text, shadow or new background. Keep the whole child including shoes, with a little transparent padding. This is a real family photo for a birthday invitation; preserving the original child is paramount.”
 
-```sh
-npm ci
-npm run build
-npm test
-npm run dev
-```
+## Verification
 
-Review desktop and phone widths, photo crops, RSVP navigation, pause/play, reduced motion, and form preview in the browser. The existing Netlify configuration uses `npm run build`, publishes `dist`, and bundles `netlify/functions`. Deploy through that configuration when ready, then configure and verify Apps Script submissions in the next stage. No deployment has been performed.
+Static checks cover local assets, whitespace, palette contrast, unchanged backend/OG assets, image alpha, and removal of decorative motion from active components. Added invite-token tests for page transitions and preview persistence. Full type checking, Vitest, production build and rendered desktop/mobile browser checks remain blocked locally: Node is 16.20.2, the project requires newer Node, npm packages are not cached, and registry.npmjs.org does not resolve.
+
+For browser review on Netlify, check `/`, `/rsvp`, and `/rsvp?invite=preview`, including browser back, phone widths, keyboard navigation, reduced motion, and personal invite links. Build command: `npm run build`; publish directory: `dist`; Node 22 is declared in `netlify.toml`.

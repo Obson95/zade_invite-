@@ -62,26 +62,11 @@ async function postJson<T>(url: string, body: unknown): Promise<{ status: number
   return { status: res.status, data };
 }
 
-async function celebrate() {
-  try {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const { default: confetti } = await import("canvas-confetti");
-    const colors = ["#1f48c0", "#8eb5f8", "#ffffff", "#e9c25a", "#d4a437"];
-    confetti({ particleCount: 110, spread: 75, origin: { y: 0.7 }, colors, disableForReducedMotion: true });
-    setTimeout(
-      () => confetti({ particleCount: 60, spread: 110, origin: { y: 0.6 }, colors, scalar: 0.9, disableForReducedMotion: true }),
-      350,
-    );
-  } catch {
-    /* confetti is optional */
-  }
-}
-
 function Shell({ children }: { children: React.ReactNode }) {
   return (
-    <section id="rsvp" aria-labelledby="rsvp-title" className="card scroll-mt-6 px-5 py-8 sm:px-8">
+    <section id="rsvp" aria-labelledby="rsvp-title" className="reply-card">
       <h2 id="rsvp-title" className="section-title text-center text-2xl sm:text-3xl">
-        RSVP
+        Your reply
       </h2>
       {children}
     </section>
@@ -127,8 +112,8 @@ export function RsvpForm({ invite }: { invite: InviteTokenState }) {
 
   return (
     <Shell>
-      {deadlineLabel && phase.s !== "done" && (
-        <p className="mt-2 text-center font-semibold text-gold-700">Kindly reply by {deadlineLabel}</p>
+      {phase.s !== "done" && (
+        <p className="mt-2 text-center font-semibold text-gold-700">Please reply by {deadlineLabel || "[TBD]"}</p>
       )}
       {mode === "preview" && (
         <p className="mx-auto mt-3 max-w-md rounded-xl bg-gold-300/30 px-4 py-3 text-center font-semibold text-gold-700">
@@ -166,7 +151,6 @@ export function RsvpForm({ invite }: { invite: InviteTokenState }) {
                 partySize,
                 name: phase.info.guestName || d.guestName,
               });
-              if (d.attending) void celebrate();
             }}
           />
         )}
@@ -191,14 +175,14 @@ function Confirmation({ name, attending, partySize, onChange }: { name: string; 
       ref={ref}
       tabIndex={-1}
       className="mx-auto mt-5 max-w-md text-center outline-none"
-      initial={{ opacity: 0, scale: 0.96 }}
-      animate={{ opacity: 1, scale: 1 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
     >
       <span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-royal-600 text-white ring-4 ring-gold-300">
         <CheckIcon className="h-7 w-7" />
       </span>
       <p className="mt-4 font-display text-2xl font-bold text-royal-800">
-        {attending ? "We can't wait to celebrate with you!" : "We'll miss you!"}
+        {attending ? "We’ll save you a place." : "We'll miss you!"}
       </p>
       <p className="mt-2 text-lg text-ink/85">
         Thank you{name ? `, ${name.split(" ")[0]}` : ""}.{" "}
@@ -321,7 +305,7 @@ function RsvpFields({
       )}
       {!isPublic && info.rsvpStatus && (
         <p className="mt-1 text-center text-sm text-ink/70">
-          You already replied — you can update your response below.
+          You already replied. You can update your response below.
         </p>
       )}
       {info.closed && (
@@ -391,8 +375,8 @@ function RsvpFields({
       <fieldset className="mt-5">
         <legend className="mb-2 font-bold text-royal-900">Will you be joining us?</legend>
         <div className="grid gap-3">
-          {choice(true, "Joyfully accepts", "Count me in! 🎈")}
-          {choice(false, "Regretfully declines", "Sending love from afar 💙")}
+          {choice(true, "Yes, I’ll be there", "Please count us in.")}
+          {choice(false, "Sorry, I can’t make it", "Sending Zade our love.")}
         </div>
       </fieldset>
 
@@ -400,9 +384,9 @@ function RsvpFields({
         {attending && (
           <m.div
             key="party"
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             className="overflow-hidden"
           >
             {max > 1 ? (
@@ -480,7 +464,7 @@ function RsvpFields({
 
       <div className="mt-6 text-center">
         <button type="submit" className="btn-royal w-full text-lg sm:w-auto" disabled={submitting || disabled}>
-          {submitting ? "Sending…" : info.rsvpStatus || initial ? "Update my RSVP" : "Send my RSVP"}
+          {submitting ? "Sending…" : info.rsvpStatus || initial ? "Update my RSVP" : "Send RSVP"}
         </button>
       </div>
     </form>

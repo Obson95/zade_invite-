@@ -9,7 +9,7 @@ import {
   zoneAbbreviation,
 } from "./time";
 
-export const COMING_SOON = "Details coming soon";
+export const COMING_SOON = "[TBD]";
 
 export interface EventDisplay {
   dateLabel: string;
