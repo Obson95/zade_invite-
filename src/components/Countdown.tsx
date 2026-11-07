@@ -1,17 +1,15 @@
 import { useEffect, useState } from "react";
-import { m, useReducedMotion } from "motion/react";
 import { event } from "../config/event";
 import { getEventDisplay } from "../lib/event-display";
 import { remainingUntil } from "../lib/time";
 
 export function Countdown() {
-  const reduce = useReducedMotion();
   const { startUtc, endUtc } = getEventDisplay(event);
   const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
     if (startUtc === null) return;
-    const id = window.setInterval(() => setNow(Date.now()), 1000);
+    const id = window.setInterval(() => setNow(Date.now()), 60000);
     return () => window.clearInterval(id);
   }, [startUtc]);
 
@@ -25,11 +23,10 @@ export function Countdown() {
         ["Days", r.days],
         ["Hours", r.hours],
         ["Minutes", r.minutes],
-        ["Seconds", r.seconds],
       ];
       body = (
         <>
-          <div className="mt-5 grid grid-cols-4 gap-2 sm:gap-3" aria-hidden="true">
+          <div className="mt-5 grid grid-cols-3 gap-2 sm:gap-3" aria-hidden="true">
             {units.map(([label, value]) => (
               <div key={label} className="countdown-unit">
                 <div className="font-display text-3xl font-bold tabular-nums sm:text-4xl">{String(value).padStart(2, "0")}</div>
@@ -55,18 +52,14 @@ export function Countdown() {
   }
 
   return (
-    <m.section
+    <section
       aria-labelledby="countdown-title"
       className="countdown-section"
-      initial={{ opacity: reduce ? 1 : 0 }}
-      whileInView={{ opacity: 1 }}
-      viewport={{ once: true, margin: "-60px" }}
-      transition={{ duration: reduce ? 0 : 0.6 }}
     >
       <h2 id="countdown-title" className="section-title text-center text-2xl sm:text-3xl">
         Until we’re together
       </h2>
       {body}
-    </m.section>
+    </section>
   );
 }

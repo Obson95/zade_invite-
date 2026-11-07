@@ -1,4 +1,24 @@
-# Zade’s invitation: stationery redesign
+# Storybook watercolor update
+
+The latest brief replaces the earlier stationery direction with a static watercolor storybook. All new illustrations are original SVG paths with translucent pigment layers and seeded edge distortion. They do not reference existing book artwork. The original hero photo/cutout and OG image are unchanged.
+
+| Section | Previous stationery design | Current storybook design |
+| --- | --- | --- |
+| Hero | Cutout on plain cream paper, large pale number | Zade against a loose blue-and-cream watercolor wash, painted crown and balloon, “Chapter one” title-page treatment |
+| Welcome and sections | Plain rules and line drawings | Small original painted clouds, moon, crown, and balloon spots beside the text |
+| Motion | Gentle scroll fades and form fades | No animation, transitions, or smooth scrolling; content is visible immediately |
+| Countdown | Days, hours, minutes, and ticking seconds | Days, hours, and minutes, with a minute-level update and no animated digits |
+| RSVP | Separate reply-card page | Same separate `/rsvp` page and submission behavior, with a small watercolor illustration and immediate state changes |
+
+Editable family memories, smaller family portrait, Creole welcome, photo placeholders, [TBD] event details, keyboard focus, and the dedicated reply page remain. The TypeScript test configuration fix is preserved.
+
+Validation: original SVGs parse as XML; local image references and the active component import graph are checked; no motion library is imported by rendered components. Full build/tests/browser verification still require a working dependency installation and supported Node version. No successful Netlify deploy is claimed here.
+
+---
+
+## Previous redesign record
+
+### Zade’s invitation: stationery redesign
 
 The current design follows `zade-invite-redesign-prompt.md`, with the photo treatment informed by `Zade_1_inspo .PNG`. The earlier animated blue-and-gold design remains in Git history at `87bde26`.
 

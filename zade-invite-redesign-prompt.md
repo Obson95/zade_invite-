@@ -1,5 +1,14 @@
 Redesign my son's 1st birthday invitation site so it feels handmade and personal, not AI-generated. Keep all existing functionality (RSVP form → Google Sheets, Netlify deploy, OG image, mobile layout) and the blue + gold "little prince" theme, but rework the visual design and copy.
 
+THEME: Storybook watercolor
+- The page should read like the pages of a classic children's picture book, with a gentle French storybook feel
+- Soft, hand-painted watercolor washes in sky blue and pale cream, with visible paper grain and uneven, bleeding edges (static image/SVG textures, not CSS gradients)
+- Fine gold ink accents: thin hand-drawn lines, small stars, a simple crown, used sparingly
+- Each section feels like a book page: a watercolor illustration spot (cloud, small balloon, crown, little planet or moon) beside short text
+- Headings set like a storybook title page; an optional opening line such as "Once upon a time, a little prince named Zade arrived…"
+- All illustrations must be original — do not copy or imitate artwork from any existing book, including The Little Prince
+- Zade's hero photo framed with a soft watercolor wash or painted border so it blends into the page
+
 REMOVE these AI tells:
 - Gradient backgrounds, glassmorphism/frosted cards, glowing shadows
 - Emojis in headings and buttons (👑🎈✨)
@@ -8,12 +17,12 @@ REMOVE these AI tells:
 - Floating/bouncing animations, sparkle or confetti effects
 - Stock phrasing like "Join us as we celebrate," "a magical day," "our little prince's special milestone," and em-dash-heavy sentences
 
-MAKE IT FEEL LIKE A PRINTED STATIONERY INVITE:
+MAKE IT FEEL HANDMADE AND PRINTED:
 - Off-white paper background with subtle texture; navy (#1F2A44-ish) and muted antique gold (not bright yellow), one soft sky-blue accent
 - Typography: one elegant serif for headings (e.g. Cormorant Garamond or Playfair), a hand-lettered/script font used ONLY for "Zade" and maybe one phrase, a clean readable body font
 - Asymmetric, editorial layout: mix left-aligned text, a large photo slot, thin gold rule lines, generous whitespace
-- Simple hand-drawn-style line illustrations (crown, balloon) as SVG instead of glossy clipart
-- Motion: at most a gentle fade-in on scroll, respecting prefers-reduced-motion
+- Hand-painted watercolor illustrations (crown, balloon, clouds) instead of glossy clipart
+- No animation at all: the page stays fully static, like a printed card
 
 PERSONAL TOUCHES:
 - Zade is the star: his photo must be the largest, most prominent image on the page (hero position). Any photos of me and my wife should be noticeably smaller and secondary — it's his day, not ours

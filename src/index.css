@@ -22,7 +22,7 @@
   --color-ink: #1f2a44;
 }
 @layer base {
-  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+  html { scroll-behavior: auto; -webkit-text-size-adjust: 100%; }
   body { margin: 0; background: #f8f5ee url('/images/paper-grain.svg'); color: #1f2a44; font-family: var(--font-sans); font-size: 16px; -webkit-font-smoothing: antialiased; }
   button, a, input, textarea, select { -webkit-tap-highlight-color: transparent; }
   button, a { touch-action: manipulation; }
@@ -71,3 +71,33 @@
   .welcome-note { padding: 27px 22px; }.welcome-note p:first-child { font-size: 21px; }.details-section, .first-year, .keepsakes-section, .family-note { padding: 52px 25px; }.details-layout { grid-template-columns: 1fr; gap: 26px; }.details-layout h2 br { display: none; }.event-lines > div { grid-template-columns: 110px 1fr; gap: 14px; }.event-lines dd { font-size: 19px; }.countdown-section { margin: 0 25px; padding: 24px 10px; }.first-year h2 { margin-bottom: 30px; }.milestones { gap: 28px 20px; }.milestones h3 { font-size: 18px; }.keepsakes-section { padding-top: 5px; }.keepsake-photos { grid-template-columns: 1fr; gap: 36px; max-width: 300px; margin: 40px auto 0; }.photo-print:nth-child(2) { margin-top: 0; }.family-note { padding-top: 10px; }.family-note-layout { grid-template-columns: 1fr; gap: 28px; }.family-note img { width: 145px; height: 190px; }.family-note h2 { font-size: 28px; }.site-footer { flex-direction: column; gap: 5px; padding: 25px; }.reply-page { padding: 26px 20px 45px; }.reply-card { padding: 27px 20px; }.reply-heading { margin: 28px 0; }
 }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation: none !important; transition: none !important; } }
+
+/* Original, static watercolor spots: translucent pigments and irregular paper edges. */
+*, *::before, *::after { animation: none !important; transition: none !important; }
+.watercolor-spot { display: block; width: 110px; height: 99px; object-fit: contain; pointer-events: none; }
+.invitation-hero { padding-top: 35px; }
+.hero-copy .hero-crown { width: 85px; height: 70px; margin: 15px 0 0 20px; transform: rotate(-7deg); }
+.hero-photo-area { isolation: isolate; }
+.hero-watercolor { position: absolute; inset: -3% -10% 0; width: 120%; height: 100%; object-fit: fill; z-index: -1; pointer-events: none; }
+.hero-photo-area .hero-balloon { position: absolute; width: 100px; height: 180px; top: 26%; right: -25px; z-index: 2; }
+.hero-letter { max-width: 400px; }
+.welcome-note { position: relative; isolation: isolate; background: transparent; padding: 45px 24px; }
+.welcome-note::before { content: ""; position: absolute; inset: -10px 0; background: url('/images/watercolor-wash.svg') center / 100% 100% no-repeat; opacity: .32; z-index: -1; }
+.welcome-note > .watercolor-spot { margin: 0 auto 8px; width: 125px; height: 75px; }
+.details-section, .first-year, .keepsakes-section, .family-note { position: relative; }
+.details-layout > div > .watercolor-spot { width: 90px; height: 100px; margin: -20px 0 16px; }
+.first-year > div > .watercolor-spot { float: right; width: 135px; height: 120px; margin: -20px 0 15px 20px; }
+.keepsakes-section > div > .watercolor-spot { width: 120px; height: 80px; margin: 0 0 12px; }
+.family-note-layout > div > .watercolor-spot { width: 75px; height: 65px; margin-bottom: 12px; }
+.reply-invitation { background: transparent; border-top: 1px solid #b5a07180; }
+.reply-invitation > .watercolor-spot { width: 85px; height: 75px; margin: 0 auto 14px; }
+.reply-heading { position: relative; padding-right: 100px; }
+.reply-heading > .watercolor-spot { position: absolute; right: 0; top: 0; width: 90px; height: 130px; }
+@media (max-width: 640px) {
+  .hero-watercolor { inset: 0 -5% 0 -15%; }
+  .hero-photo-area .hero-balloon { left: -45px; right: auto; width: 80px; height: 140px; }
+  .hero-copy > .eyebrow { letter-spacing: .12em; }
+  .first-year > div > .watercolor-spot { width: 85px; height: 85px; margin-top: 0; }
+  .reply-heading { padding-right: 65px; }
+  .reply-heading > .watercolor-spot { width: 60px; height: 100px; }
+}

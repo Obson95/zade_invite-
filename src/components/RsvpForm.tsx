@@ -1,5 +1,4 @@
 import { useEffect, useId, useRef, useState, type FormEvent } from "react";
-import { AnimatePresence, m } from "motion/react";
 import { event } from "../config/event";
 import { getEventDisplay } from "../lib/event-display";
 import type { InviteTokenState } from "../lib/invite-token";
@@ -123,7 +122,7 @@ export function RsvpForm({ invite }: { invite: InviteTokenState }) {
       <div aria-live="polite">
         {phase.s === "loading" && (
           <p className="mt-6 flex items-center justify-center gap-3 text-royal-700">
-            <span className="h-5 w-5 animate-spin rounded-full border-[3px] border-royal-200 border-t-royal-600 motion-reduce:animate-none" aria-hidden="true" />
+            <span className="h-5 w-5 rounded-full border-[3px] border-royal-200 border-t-royal-600" aria-hidden="true" />
             Loading…
           </p>
         )}
@@ -171,12 +170,10 @@ function Confirmation({ name, attending, partySize, onChange }: { name: string; 
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => ref.current?.focus(), []);
   return (
-    <m.div
+    <div
       ref={ref}
       tabIndex={-1}
       className="mx-auto mt-5 max-w-md text-center outline-none"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
     >
       <span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-royal-600 text-white ring-4 ring-gold-300">
         <CheckIcon className="h-7 w-7" />
@@ -193,7 +190,7 @@ function Confirmation({ name, attending, partySize, onChange }: { name: string; 
       <button type="button" onClick={onChange} className="mt-5 font-bold text-royal-700 underline underline-offset-4">
         Change my response
       </button>
-    </m.div>
+    </div>
   );
 }
 
@@ -270,7 +267,7 @@ function RsvpFields({
     const selected = attending === value;
     return (
       <label
-        className={`flex min-h-16 cursor-pointer items-center gap-3 rounded-2xl border-2 px-4 py-3 transition-colors ${
+        className={`flex min-h-16 cursor-pointer items-center gap-3 rounded-2xl border-2 px-4 py-3 ${
           selected ? "border-royal-600 bg-royal-50" : "border-royal-200 bg-white hover:border-royal-300"
         } ${disabled ? "cursor-not-allowed opacity-70" : ""}`}
       >
@@ -380,13 +377,10 @@ function RsvpFields({
         </div>
       </fieldset>
 
-      <AnimatePresence initial={false}>
+      <>
         {attending && (
-          <m.div
+          <div
             key="party"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
             className="overflow-hidden"
           >
             {max > 1 ? (
@@ -433,9 +427,9 @@ function RsvpFields({
                 />
               </div>
             )}
-          </m.div>
+          </div>
         )}
-      </AnimatePresence>
+      </>
 
       <div className="mt-5">
         <label htmlFor={`${uid}-msg`} className="font-bold text-royal-900">
