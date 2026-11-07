@@ -36,17 +36,22 @@ describe("time helpers", () => {
 });
 
 describe("event config", () => {
-  it("ships with no invented event facts", () => {
-    expect(event.date).toBeNull();
-    expect(event.venueName).toBeNull();
+  const unset = { ...event, date: null, startTime: null, timeZone: null, venueName: null, venueAddress: null, rsvpDeadline: null };
+  it("holds the confirmed party date and leaves unknown facts empty", () => {
+    expect(event.date).toBe("2026-11-22");
+    expect(new Date(`${event.date}T12:00:00Z`).getUTCDay()).toBe(0); // a Sunday
+    expect(getEventDisplay(event).timeLabel).toBe("12:00 PM EST");
+    expect(event.venueAddress).toBe("Bellmawr, NJ 08031");
+    expect(event.rsvpDeadline).toBe("2026-11-18");
+    expect(new Date("2026-11-18T12:00:00Z").getUTCDay()).toBe(3); // a Wednesday
     expect(isEventConfirmed()).toBe(false);
-    expect(missingEventFields()).toContain("Event date");
+    expect(missingEventFields()).toEqual(["Max guests per invitation"]);
   });
   it("shows [TBD] while facts are missing", () => {
-    const d = getEventDisplay(event);
+    const d = getEventDisplay(unset);
     expect(d.dateLabel).toBe("[TBD]");
     expect(d.startUtc).toBeNull();
-    expect(buildIcsHref(event, d)).toBeNull();
+    expect(buildIcsHref(unset, d)).toBeNull();
   });
   it("builds labels and a calendar file once facts are filled in", () => {
     const filled = {

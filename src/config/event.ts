@@ -48,15 +48,15 @@ export const event: EventConfig = {
   child: { fullName: "Zade Noah Saintfleur", firstName: "Zade" },
   occasion: "First birthday",
 
-  date: null, //            TBD — e.g. "2027-01-16"
-  startTime: null, //       TBD — e.g. "14:00"
+  date: "2026-11-22", //    Sunday
+  startTime: "12:00",
   endTime: null, //         TBD (optional)
-  timeZone: null, //        TBD — e.g. "America/New_York"
-  venueName: null, //       TBD
-  venueAddress: null, //    TBD
+  timeZone: "America/New_York",
+  venueName: "205 Walnut Ave",
+  venueAddress: "Bellmawr, NJ 08031",
   dressCode: null, //       TBD
   mapUrl: null,
-  rsvpDeadline: null, //    TBD — e.g. "2027-01-02"
+  rsvpDeadline: "2026-11-18", // Wednesday
   maxGuestsPerInvite: null, // TBD — e.g. 4
   contactEmail: null, //    TBD (optional)
 

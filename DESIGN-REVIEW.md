@@ -34,8 +34,8 @@ Node 22 and headless Chromium, on the built site, served with the real Content-S
 
 ## Still to fill in
 
-- The wife's name in the sign-off, and every `[bracketed]` memory, date and caption in `src/config/book.ts`.
-- 12 placeholder photos, 3 videos, and the party details in `src/config/event.ts`, including the new `dressCode`.
+- Every `[bracketed]` memory, date and caption in `src/config/book.ts`.
+- 12 placeholder photos, 3 videos, and the guest limit and `dressCode` in `src/config/event.ts`.
 - Some opening lines are drafts in a parent's voice, such as "We counted his fingers." Please check that they are true to you. Please also have a Haitian Creole speaker read the Creole line.
 
 ---

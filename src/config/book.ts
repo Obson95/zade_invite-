@@ -149,7 +149,7 @@ export const pages: BookPage[] = [
     body: ["Thank you for loving our boy.", "It means so much to have you in Zade’s life. We hope you can spend this day with us."],
     creole: "Nou pa ka tann pou nou fete avè w!",
     creoleMeaning: "We can’t wait to celebrate with you.",
-    signOff: "Obson & [wife’s name]",
+    signOff: "Obson & Maelle",
     photo: { src: "/images/family-576.webp", alt: "Zade with his mom and dad at church.", width: 576, height: 1024 },
   },
   {
