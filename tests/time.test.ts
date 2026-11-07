@@ -42,9 +42,9 @@ describe("event config", () => {
     expect(isEventConfirmed()).toBe(false);
     expect(missingEventFields()).toContain("Event date");
   });
-  it("shows 'Details coming soon' while facts are missing", () => {
+  it("shows [TBD] while facts are missing", () => {
     const d = getEventDisplay(event);
-    expect(d.dateLabel).toBe("Details coming soon");
+    expect(d.dateLabel).toBe("[TBD]");
     expect(d.startUtc).toBeNull();
     expect(buildIcsHref(event, d)).toBeNull();
   });

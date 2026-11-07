@@ -14,22 +14,17 @@
     "node": ">=20"
   },
   "dependencies": {
-    "@fontsource/dancing-script": "^5.3.0",
-    "@fontsource/nunito": "^5.3.0",
-    "@fontsource/playfair-display": "^5.3.0",
-    "canvas-confetti": "^1.9.4",
-    "motion": "^14.10.0",
+    "@fontsource/allura": "^5.3.0",
+    "@fontsource/cormorant-garamond": "^5.3.0",
+    "@fontsource/spectral": "^5.3.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
   },
   "devDependencies": {
-    "@tailwindcss/vite": "^4.3.4",
-    "@types/canvas-confetti": "^1.9.0",
     "@types/node": "^26.6.6",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.2.1",
-    "tailwindcss": "^4.3.4",
     "typescript": "^7.0.2",
     "vite": "^8.3.6",
     "vitest": "^5.1.0"

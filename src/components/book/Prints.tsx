@@ -1,0 +1,73 @@
+import { useEffect, useRef, useState, type CSSProperties } from "react";
+import type { PhotoSlot, VideoSlot } from "../../config/book";
+
+/** A photo print laid on the page. `tilt` is in degrees. */
+export function Print({ photo, tilt = 0, order = 0, tape = true, className = "" }: { photo: PhotoSlot; tilt?: number; order?: number; tape?: boolean; className?: string }) {
+  const style = { "--tilt": `${tilt}deg`, "--order": order } as CSSProperties;
+  return (
+    <figure className={`print ${tape ? "has-tape" : ""} ${className}`} style={style}>
+      <img src={photo.src} alt={photo.alt} width={photo.width} height={photo.height} decoding="async" draggable={false} />
+      {photo.caption ? <figcaption>{photo.caption}</figcaption> : null}
+    </figure>
+  );
+}
+
+function isPlayerLink(url: string) {
+  return /^https:\/\/(www\.youtube-nocookie\.com|www\.youtube\.com|player\.vimeo\.com)\//.test(url);
+}
+
+function embedUrl(url: string) {
+  const link = new URL(url);
+  link.searchParams.set("autoplay", "1");
+  link.searchParams.set("mute", "1");
+  link.searchParams.set("muted", "1");
+  link.searchParams.set("cc_load_policy", "1");
+  return link.toString();
+}
+
+/**
+ * Nothing but the poster loads until someone presses play. Video starts muted
+ * with controls showing, and stops when the page turns (`active` goes false).
+ */
+export function VideoFrame({ video, active, order = 0, className = "" }: { video: VideoSlot; active: boolean; order?: number; className?: string }) {
+  const [started, setStarted] = useState(false);
+  const [waiting, setWaiting] = useState(false);
+  const player = useRef<HTMLVideoElement>(null);
+  const embed = video.embed && isPlayerLink(video.embed) ? video.embed : null;
+
+  useEffect(() => {
+    if (active) return;
+    player.current?.pause();
+    if (embed) setStarted(false);
+  }, [active, embed]);
+
+  function play() {
+    if (video.src || embed) setStarted(true);
+    else setWaiting(true);
+  }
+
+  return (
+    <figure className={`video-frame ${className}`} style={{ "--order": order } as CSSProperties}>
+      <div className="video-mat">
+        {started && embed ? (
+          // YouTube refuses to play with no referrer at all, which is this site's default.
+          <iframe src={embedUrl(embed)} title={video.title} allow="autoplay; fullscreen; picture-in-picture" allowFullScreen referrerPolicy="strict-origin-when-cross-origin" />
+        ) : started ? (
+          <video ref={player} src={video.src} poster={video.poster} controls muted autoPlay playsInline preload="metadata" aria-label={video.title}>
+            {video.captions ? <track kind="captions" src={video.captions} srcLang="en" label="English" default /> : null}
+          </video>
+        ) : (
+          <button type="button" className="video-poster" onClick={play} aria-label={`Play video: ${video.title}`}>
+            <img src={video.poster} alt={video.posterAlt} decoding="async" draggable={false} />
+            <img className="video-play" src="/images/book/play.webp" alt="" width={220} height={220} />
+          </button>
+        )}
+      </div>
+      <figcaption>
+        <strong>{video.title}</strong>
+        {video.caption ? <span>{video.caption}</span> : null}
+        {waiting ? <span role="status">This video is still on its way.</span> : null}
+      </figcaption>
+    </figure>
+  );
+}

@@ -10,8 +10,6 @@ import {
   MAX_NAME_LENGTH,
 } from "../lib/rsvp-schema";
 import { isPastDeadline, isValidDateString, isValidTimeZone } from "../lib/time";
-import { WatercolorSpot } from "./Stationery";
-import { CheckIcon } from "./Icons";
 
 interface InviteInfo {
   guestName: string;
@@ -65,15 +63,14 @@ async function postJson<T>(url: string, body: unknown): Promise<{ status: number
 function Shell({ children }: { children: React.ReactNode }) {
   return (
     <section id="rsvp" aria-labelledby="rsvp-title" className="reply-card">
-      <h2 id="rsvp-title" className="section-title text-center text-2xl sm:text-3xl">
-        Your reply
-      </h2>
+      <p className="reply-kicker">Reply card</p>
+      <h3 id="rsvp-title">Will you come to Zade’s party?</h3>
       {children}
     </section>
   );
 }
 
-export function RsvpForm({ invite }: { invite: InviteTokenState }) {
+export function RsvpForm({ invite, intro }: { invite: InviteTokenState; intro: string }) {
   const { deadlineLabel } = getEventDisplay(event);
   const token = invite.kind === "token" ? invite.token : null;
   const mode: Mode = invite.kind === "token" ? "invite" : invite.kind === "preview" ? "preview" : "public";
@@ -113,24 +110,19 @@ export function RsvpForm({ invite }: { invite: InviteTokenState }) {
   return (
     <Shell>
       {phase.s !== "done" && (
-        <p className="mt-2 text-center font-semibold text-gold-700">Please reply by {deadlineLabel || "[TBD]"}</p>
+        <p className="reply-by">Please reply by {deadlineLabel || "[TBD]"}. {intro}</p>
       )}
       {mode === "preview" && (
-        <p className="mx-auto mt-3 max-w-md rounded-xl bg-gold-300/30 px-4 py-3 text-center font-semibold text-gold-700">
-          Preview — responses can&rsquo;t be submitted from a preview link.
-        </p>
+        <p className="reply-note">Preview only. Replies can&rsquo;t be sent from a preview link.</p>
       )}
       <div aria-live="polite">
         {phase.s === "loading" && (
-          <p className="mt-6 flex items-center justify-center gap-3 text-royal-700">
-            <span className="h-5 w-5 rounded-full border-[3px] border-royal-200 border-t-royal-600" aria-hidden="true" />
-            Loading…
-          </p>
+          <p className="reply-status">Finding your invitation…</p>
         )}
         {phase.s === "error" && (
-          <div role="alert" className="mx-auto mt-5 max-w-md text-center">
-            <p className="text-lg text-ink/85">{phase.message}</p>
-            <button type="button" className="btn-royal mt-5" onClick={() => window.location.reload()}>
+          <div role="alert" className="reply-status">
+            <p>{phase.message}</p>
+            <button type="button" className="send-button" onClick={() => window.location.reload()}>
               Try again
             </button>
           </div>
@@ -169,30 +161,19 @@ export function RsvpForm({ invite }: { invite: InviteTokenState }) {
 
 function Confirmation({ name, attending, partySize, onChange }: { name: string; attending: boolean; partySize: number; onChange: () => void }) {
   const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => ref.current?.focus(), []);
+  useEffect(() => ref.current?.focus({ preventScroll: true }), []);
   return (
-    <div
-      ref={ref}
-      tabIndex={-1}
-      className="rsvp-confirmation mx-auto mt-5 max-w-md text-center outline-none"
-    >
-      <div className="reply-flight" aria-hidden="true"><WatercolorSpot kind="balloon" /></div>
+    <div ref={ref} tabIndex={-1} className="rsvp-confirmation">
+      <img className="reply-flight" src="/images/book/balloon.webp" alt="" />
       <div className="thank-you-note">
-      <span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-royal-600 text-white ring-4 ring-gold-300">
-        <CheckIcon className="h-7 w-7" />
-      </span>
-      <p className="mt-4 font-display text-2xl font-bold text-royal-800">
-        {attending ? "We’ll save you a place." : "We'll miss you!"}
-      </p>
-      <p className="mt-2 text-lg text-ink/85">
-        Thank you{name ? `, ${name.split(" ")[0]}` : ""}.{" "}
-        {attending
-          ? `Your RSVP for ${partySize} ${partySize === 1 ? "guest" : "guests"} is saved.`
-          : "Your response has been saved. Thank you for letting us know."}
-      </p>
-      <button type="button" onClick={onChange} className="mt-5 font-bold text-royal-700 underline underline-offset-4">
-        Change my response
-      </button>
+        <p className="thank-you-head">{attending ? "We’ll save you a place." : "We’ll miss you."}</p>
+        <p>
+          Thank you{name ? `, ${name.split(" ")[0]}` : ""}.{" "}
+          {attending
+            ? `Your RSVP for ${partySize} ${partySize === 1 ? "guest" : "guests"} is saved.`
+            : "Your reply is saved. Thank you for letting us know."}
+        </p>
+        <button type="button" onClick={onChange} className="change-reply">Change my response</button>
       </div>
     </div>
   );
@@ -270,15 +251,10 @@ function RsvpFields({
   const choice = (value: boolean, label: string, sub: string) => {
     const selected = attending === value;
     return (
-      <label
-        className={`flex min-h-16 cursor-pointer items-center gap-3 rounded-2xl border-2 px-4 py-3 ${
-          selected ? "border-royal-600 bg-royal-50" : "border-royal-200 bg-white hover:border-royal-300"
-        } ${disabled ? "cursor-not-allowed opacity-70" : ""}`}
-      >
+      <label className={`choice ${selected ? "is-selected" : ""}`}>
         <input
           type="radio"
           name={`${uid}-attending`}
-          className="h-5 w-5 accent-royal-600"
           checked={selected}
           onChange={() => {
             setAttending(value);
@@ -288,37 +264,31 @@ function RsvpFields({
           aria-describedby={error?.field === "attending" ? `${uid}-err` : undefined}
         />
         <span>
-          <span className="block font-bold text-royal-900">{label}</span>
-          <span className="block text-sm text-ink/70">{sub}</span>
+          <strong>{label}</strong>
+          <small>{sub}</small>
         </span>
       </label>
     );
   };
 
   return (
-    <form onSubmit={onSubmit} noValidate className="relative mx-auto mt-5 max-w-md" aria-busy={submitting}>
-      {isPublic ? (
-        <p className="text-center text-lg text-ink/85">We&rsquo;d love to know if you can make it!</p>
-      ) : (
-        <p className="text-center text-lg">
-          Welcome{info.guestName ? <>, <strong className="text-royal-800">{info.guestName}</strong></> : null}!
-        </p>
-      )}
+    <form onSubmit={onSubmit} noValidate className="reply-form" aria-busy={submitting}>
+      {!isPublic && info.guestName ? <p className="reply-welcome">Hello, <strong>{info.guestName}</strong>.</p> : null}
       {!isPublic && info.rsvpStatus && (
-        <p className="mt-1 text-center text-sm text-ink/70">
+        <p className="reply-hint">
           You already replied. You can update your response below.
         </p>
       )}
       {info.closed && (
-        <p className="mt-3 rounded-xl bg-gold-300/30 px-4 py-3 text-center font-semibold text-gold-700">
+        <p className="reply-note">
           RSVPs are now closed. Please contact the family directly with any changes.
         </p>
       )}
 
       {isPublic && (
         <>
-          <div className="mt-5">
-            <label htmlFor={`${uid}-name`} className="font-bold text-royal-900">
+          <div className="field">
+            <label htmlFor={`${uid}-name`} className="field-label">
               Your name
             </label>
             <input
@@ -336,12 +306,11 @@ function RsvpFields({
               autoComplete="name"
               aria-invalid={error?.field === "guestName" || undefined}
               aria-describedby={error?.field === "guestName" ? `${uid}-err` : undefined}
-              className="mt-2 block min-h-12 w-full rounded-xl border-2 border-royal-200 bg-white px-3 text-lg focus:border-royal-600"
             />
           </div>
-          <div className="mt-4">
-            <label htmlFor={`${uid}-email`} className="font-bold text-royal-900">
-              Email <span className="font-normal text-ink/60">(optional)</span>
+          <div className="field">
+            <label htmlFor={`${uid}-email`} className="field-label">
+              Email <span>(optional)</span>
             </label>
             <input
               id={`${uid}-email`}
@@ -357,14 +326,13 @@ function RsvpFields({
               autoComplete="email"
               aria-invalid={error?.field === "email" || undefined}
               aria-describedby={`${uid}-email-hint${error?.field === "email" ? ` ${uid}-err` : ""}`}
-              className="mt-2 block min-h-12 w-full rounded-xl border-2 border-royal-200 bg-white px-3 text-lg focus:border-royal-600"
             />
-            <p id={`${uid}-email-hint`} className="mt-1 text-sm text-ink/65">
+            <p id={`${uid}-email-hint`} className="reply-hint">
               Need to change your answer later? Just RSVP again with the same email (or name).
             </p>
           </div>
           {/* Honeypot: hidden from people and screen readers; bots tend to fill it in. */}
-          <div aria-hidden="true" className="absolute -left-[9999px] h-px w-px overflow-hidden">
+          <div aria-hidden="true" className="honeypot">
             <label>
               Website
               <input type="text" tabIndex={-1} autoComplete="off" value={honeypot} onChange={(e) => setHoneypot(e.target.value)} />
@@ -373,9 +341,9 @@ function RsvpFields({
         </>
       )}
 
-      <fieldset className="mt-5">
-        <legend className="mb-2 font-bold text-royal-900">Will you be joining us?</legend>
-        <div className="grid gap-3">
+      <fieldset className="field choices">
+        <legend className="field-label">Will you be joining us?</legend>
+        <div>
           {choice(true, "Yes, I’ll be there", "Please count us in.")}
           {choice(false, "Sorry, I can’t make it", "Sending Zade our love.")}
         </div>
@@ -383,13 +351,10 @@ function RsvpFields({
 
       <>
         {attending && (
-          <div
-            key="party"
-            className="overflow-hidden"
-          >
+          <div key="party">
             {max > 1 ? (
-              <div className="mt-5">
-                <label htmlFor={`${uid}-party`} className="font-bold text-royal-900">
+              <div className="field">
+                <label htmlFor={`${uid}-party`} className="field-label">
                   How many in your party (including you)?
                 </label>
                 <select
@@ -397,7 +362,6 @@ function RsvpFields({
                   value={partySize}
                   onChange={(e) => setPartySize(Number(e.target.value))}
                   disabled={disabled}
-                  className="mt-2 block min-h-12 w-full rounded-xl border-2 border-royal-200 bg-white px-3 text-lg focus:border-royal-600"
                   aria-describedby={`${uid}-party-hint`}
                 >
                   {Array.from({ length: max }, (_, i) => i + 1).map((n) => (
@@ -406,18 +370,18 @@ function RsvpFields({
                     </option>
                   ))}
                 </select>
-                <p id={`${uid}-party-hint`} className="mt-1 text-sm text-ink/65">
+                <p id={`${uid}-party-hint`} className="reply-hint">
                   {isPublic ? `Up to ${max} people, including you.` : `Your invitation includes up to ${max} ${max === 1 ? "guest" : "guests"}.`}
                 </p>
               </div>
             ) : (
-              <p className="mt-4 text-sm text-ink/70">This invitation is for 1 guest.</p>
+              <p className="reply-hint">This invitation is for 1 guest.</p>
             )}
 
             {event.askDietaryNotes && (
-              <div className="mt-5">
-                <label htmlFor={`${uid}-diet`} className="font-bold text-royal-900">
-                  Dietary needs <span className="font-normal text-ink/60">(optional)</span>
+              <div className="field">
+                <label htmlFor={`${uid}-diet`} className="field-label">
+                  Dietary needs <span>(optional)</span>
                 </label>
                 <input
                   id={`${uid}-diet`}
@@ -427,7 +391,6 @@ function RsvpFields({
                   onChange={(e) => setDietary(e.target.value)}
                   disabled={disabled}
                   autoComplete="off"
-                  className="mt-2 block min-h-12 w-full rounded-xl border-2 border-royal-200 bg-white px-3 text-base focus:border-royal-600"
                 />
               </div>
             )}
@@ -435,9 +398,9 @@ function RsvpFields({
         )}
       </>
 
-      <div className="mt-5">
-        <label htmlFor={`${uid}-msg`} className="font-bold text-royal-900">
-          A note for Zade&rsquo;s family <span className="font-normal text-ink/60">(optional)</span>
+      <div className="field">
+        <label htmlFor={`${uid}-msg`} className="field-label">
+          A note for Zade&rsquo;s family <span>(optional)</span>
         </label>
         <textarea
           id={`${uid}-msg`}
@@ -446,22 +409,21 @@ function RsvpFields({
           maxLength={MAX_MESSAGE_LENGTH}
           onChange={(e) => setMessage(e.target.value)}
           disabled={disabled}
-          className="mt-2 block w-full rounded-xl border-2 border-royal-200 bg-white px-3 py-2 text-base focus:border-royal-600"
           aria-describedby={`${uid}-msg-count`}
         />
-        <p id={`${uid}-msg-count`} className="mt-1 text-right text-xs text-ink/55">
+        <p id={`${uid}-msg-count`} className="reply-count">
           {message.length}/{MAX_MESSAGE_LENGTH}
         </p>
       </div>
 
       {error && (
-        <p id={`${uid}-err`} role="alert" className="mt-3 rounded-xl bg-red-50 px-4 py-3 text-center font-semibold text-red-800">
+        <p id={`${uid}-err`} role="alert" className="reply-error">
           {error.text}
         </p>
       )}
 
-      <div className="mt-6 text-center">
-        <button type="submit" className="btn-royal w-full text-lg sm:w-auto" disabled={submitting || disabled}>
+      <div className="reply-send">
+        <button type="submit" className="send-button" disabled={submitting || disabled}>
           {submitting ? "Sending…" : info.rsvpStatus || initial ? "Update my RSVP" : "Send RSVP"}
         </button>
       </div>

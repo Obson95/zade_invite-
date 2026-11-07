@@ -45,16 +45,16 @@ export function MusicToggle() {
     }
   }
 
-  const title = event.music.title ? ` — ${event.music.title}` : "";
+  const title = event.music.title ? `: ${event.music.title}` : "";
   return (
     <button
       type="button"
       onClick={toggle}
       aria-pressed={playing}
       aria-label={playing ? `Pause music${title}` : `Play music${title}${saveData ? " (uses data)" : ""}`}
-      className="fixed right-4 bottom-[max(1rem,env(safe-area-inset-bottom))] z-50 grid h-12 w-12 place-items-center rounded-full border-2 border-gold-400 bg-royal-700 text-white shadow-lg"
+      className="music-toggle"
     >
-      {playing ? <PauseIcon className="h-5 w-5" /> : <MusicIcon className="h-5 w-5" />}
+      {playing ? <PauseIcon /> : <MusicIcon />}
     </button>
   );
 }

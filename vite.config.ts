@@ -1,6 +1,5 @@
 import { defineConfig, type Plugin } from "vite";
 import react from "@vitejs/plugin-react";
-import tailwindcss from "@tailwindcss/vite";
 
 /**
  * Injects the absolute site URL into index.html so WhatsApp / iMessage link
@@ -20,7 +19,7 @@ function siteUrlPlugin(): Plugin {
 }
 
 export default defineConfig({
-  plugins: [react(), tailwindcss(), siteUrlPlugin()],
+  plugins: [react(), siteUrlPlugin()],
   build: {
     target: "es2020",
     sourcemap: false,

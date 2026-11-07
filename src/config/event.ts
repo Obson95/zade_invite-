@@ -4,7 +4,7 @@
  * ─────────────────────────────────────────────────────────────────────────
  *  Everything shown on the invitation (and the RSVP deadline the server
  *  enforces) comes from this file. Leave a value as `null` until it is
- *  confirmed — the site will show "Details coming soon" instead of guessing.
+ *  confirmed — the site will show [TBD] instead of guessing.
  *
  *  ⚠️  This file is bundled into the public website. Never put secrets,
  *      spreadsheet IDs, emails you want private, or webhook URLs in here.
@@ -25,6 +25,8 @@ export interface EventConfig {
   timeZone: string | null;
   venueName: string | null;
   venueAddress: string | null;
+  /** e.g. "Sunday best, shoes optional" */
+  dressCode: string | null;
   /** Optional. If null, a Google Maps search link is built from the address. */
   mapUrl: string | null;
   /** "YYYY-MM-DD" — last day RSVPs are accepted (inclusive, event time zone) */
@@ -52,6 +54,7 @@ export const event: EventConfig = {
   timeZone: null, //        TBD — e.g. "America/New_York"
   venueName: null, //       TBD
   venueAddress: null, //    TBD
+  dressCode: null, //       TBD
   mapUrl: null,
   rsvpDeadline: null, //    TBD — e.g. "2027-01-02"
   maxGuestsPerInvite: null, // TBD — e.g. 4

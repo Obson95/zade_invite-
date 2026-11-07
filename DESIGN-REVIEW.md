@@ -1,3 +1,47 @@
+# The book
+
+The invitation is now a picture book that follows `zade-invite-redesign-prompt.md`. Before and after pictures are in `docs/before-after/`.
+
+| Part | Before | After |
+| --- | --- | --- |
+| Structure | One long scrolling page with a separate `/rsvp` page | Cover, eight pages, back cover. Two-page spreads on a computer, one page at a time on a phone. All content comes from the `pages` array in `src/config/book.ts`. |
+| Page turns | Cover dissolve only | Paper fold geometry: the sheet folds along the line between the lifted corner and its resting place, and the real next page rides on the flap with shadow at the fold. Covers swing on a hinge. Turns follow a finger, and corners lift under a mouse. |
+| Navigation | Scroll and nav links | Page corners, arrows, keyboard arrows, swipe, a contents list and an RSVP button. Page numbers are printed on each page, and `/rsvp` and `/#page` links still work. |
+| Painting | SVG blobs | `scripts/paint-watercolors.py` lays down original washes, crown, balloon, clouds, moon, stars and paper from layered, seeded pigment with edge pooling and granulation. No book artwork was used as a reference. |
+| Photos | Cutout, three prints | Painted-edge close-up as the largest image in the book, cleaned cutout on the cover, 13 taped print slots, and a smaller family print. |
+| Video | None | Three framed slots with a painted play button. Muted, with controls and captions. Loads only on play and stops when the page turns. MP4 or YouTube/Vimeo link. |
+| Name | Uniform wire lettering | Allura outlines revealed through eight pen strokes, in writing order, so thick and thin lines appear as it is written. Allura was chosen over prettier scripts because they read as "Jade". |
+| Removed | | Skip button, pause button, session cover memory, Tailwind, Motion, canvas-confetti, Playfair, Nunito, Dancing Script, stacked cards, and stock phrasing. |
+| Reduced motion | Static page | Pages fade with no curl, all drawings finished, no drifting, and the thank-you note shows at once. |
+
+## Verified
+
+Node 22 and headless Chromium, on the built site, served with the real Content-Security-Policy from `public/_headers`.
+
+- `npm test`: all suites pass, including new tests for page order, spreads, URLs, turn routes and fold geometry (paper area is conserved, the sheet stays on the spine, the back page lands exactly on the flap and is never mirrored).
+- 64 browser checks: cover, peel and fall-back, corner click, queued key presses, contents, RSVP jump, browser back, reload, swipe, cancelled swipe, vertical scroll, form state across turns, validation, public and personal-link submissions (mocked Netlify responses), preview mode, reduced motion, focus handling, hidden pages inert, and resizing between layouts.
+- 8 media checks with a real clip in a throwaway build: nothing downloads before play, muted with controls, captions showing, embed allowed by the CSP, pauses on turn.
+- axe-core (WCAG 2 A/AA and best practice): no violations on the cover, sample pages, RSVP and back cover, on desktop and phone.
+- Page fit at 10 screen sizes from 360×640 to 1920×1080. Pages fit without scrolling, except the RSVP form on short screens and everything on a phone held sideways, where the page scrolls.
+- Turn frame rate: 60 fps at 390×844 with the CPU throttled 4×. About 42 fps at 1440×900 in a headless browser with no GPU, so a real computer should do better.
+
+## Not verified
+
+- A real iPhone or Android phone. Everything above is emulation, and Safari was not tested at all. The layout uses container query units, so iPhones older than iOS 16 are the most likely to look wrong.
+- A live submission to Google Sheets. The Netlify functions and Apps Script are unchanged and their tests pass, but the connection is still not configured.
+- A real MP4. Playback was tested with a WebM clip.
+- A Netlify deploy, and real YouTube or Vimeo playback (the player was stubbed).
+
+## Still to fill in
+
+- The wife's name in the sign-off, and every `[bracketed]` memory, date and caption in `src/config/book.ts`.
+- 12 placeholder photos, 3 videos, and the party details in `src/config/event.ts`, including the new `dressCode`.
+- Some opening lines are drafts in a parent's voice, such as "We counted his fingers." Please check that they are true to you. Please also have a Haitian Creole speaker read the Creole line.
+
+---
+
+## Previous design record
+
 # Animated watercolor storybook update
 
 The latest brief restores substantial motion, with slow storybook choreography and a complete static alternative. All original watercolor assets and the separate `/rsvp` page remain.
