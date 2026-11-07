@@ -10,6 +10,7 @@ import {
   MAX_NAME_LENGTH,
 } from "../lib/rsvp-schema";
 import { isPastDeadline, isValidDateString, isValidTimeZone } from "../lib/time";
+import { WatercolorSpot } from "./Stationery";
 import { CheckIcon } from "./Icons";
 
 interface InviteInfo {
@@ -173,8 +174,10 @@ function Confirmation({ name, attending, partySize, onChange }: { name: string; 
     <div
       ref={ref}
       tabIndex={-1}
-      className="mx-auto mt-5 max-w-md text-center outline-none"
+      className="rsvp-confirmation mx-auto mt-5 max-w-md text-center outline-none"
     >
+      <div className="reply-flight" aria-hidden="true"><WatercolorSpot kind="balloon" /></div>
+      <div className="thank-you-note">
       <span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-royal-600 text-white ring-4 ring-gold-300">
         <CheckIcon className="h-7 w-7" />
       </span>
@@ -190,6 +193,7 @@ function Confirmation({ name, attending, partySize, onChange }: { name: string; 
       <button type="button" onClick={onChange} className="mt-5 font-bold text-royal-700 underline underline-offset-4">
         Change my response
       </button>
+      </div>
     </div>
   );
 }

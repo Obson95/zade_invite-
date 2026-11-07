@@ -14,7 +14,7 @@ REMOVE these AI tells:
 - Emojis in headings and buttons (👑🎈✨)
 - Generic fonts (Inter, Poppins, Montserrat) and everything-centered layouts
 - Identical rounded cards stacked in a column
-- Floating/bouncing animations, sparkle or confetti effects
+- Generic, template-looking motion: bouncy pop-ins, glowing pulses, sparkle bursts, confetti cannons
 - Stock phrasing like "Join us as we celebrate," "a magical day," "our little prince's special milestone," and em-dash-heavy sentences
 
 MAKE IT FEEL HANDMADE AND PRINTED:
@@ -22,7 +22,19 @@ MAKE IT FEEL HANDMADE AND PRINTED:
 - Typography: one elegant serif for headings (e.g. Cormorant Garamond or Playfair), a hand-lettered/script font used ONLY for "Zade" and maybe one phrase, a clean readable body font
 - Asymmetric, editorial layout: mix left-aligned text, a large photo slot, thin gold rule lines, generous whitespace
 - Hand-painted watercolor illustrations (crown, balloon, clouds) instead of glossy clipart
-- No animation at all: the page stays fully static, like a printed card
+- Lots of animation, but storybook-style and hand-crafted, not generic AI effects:
+  - Opening: a book cover that opens (or a page-turn) to reveal the invitation
+  - Watercolor washes that "bleed" and spread into place as each section scrolls into view
+  - Gold ink lines, stars and the crown that draw themselves in (SVG stroke animation)
+  - Zade's name hand-lettered in script, written out stroke by stroke
+  - Clouds and a small balloon drifting slowly across the sky, with gentle parallax between layers
+  - Twinkling gold stars and a soft moon in the background
+  - Photos that settle onto the page like prints being placed down, with a slight tilt
+  - Page-turn or soft dissolve transitions between sections
+  - RSVP: after submitting, a small painted balloon or paper envelope floats away, then a thank-you note appears
+  - Keep motion slow and soft (eased, organic timing), never fast or bouncy
+  - Respect prefers-reduced-motion: show the finished static version for those users
+  - Keep it smooth on phones (animate transform/opacity, lazy-load heavy assets)
 
 PERSONAL TOUCHES:
 - Zade is the star: his photo must be the largest, most prominent image on the page (hero position). Any photos of me and my wife should be noticeably smaller and secondary — it's his day, not ours

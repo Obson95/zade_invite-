@@ -1,3 +1,34 @@
+# Animated watercolor storybook update
+
+The latest brief restores substantial motion, with slow storybook choreography and a complete static alternative. All original watercolor assets and the separate `/rsvp` page remain.
+
+| Section | Before | After |
+| --- | --- | --- |
+| Opening | Invitation visible immediately | A keyboard-accessible book cover opens with a slow page turn; Escape and “Skip opening” bypass it. Seen once per tab session; direct RSVP and section links bypass it. |
+| Hero | Static photo and script title | Hand-drawn SVG lettering writes “Zade” stroke by stroke; the gold crown draws in; watercolor grows behind the unchanged cutout. |
+| Sky | Static illustration spots | Clouds, balloon, and moon drift; small gold stars draw and slowly brighten/dim. Bounded parallax is enabled only for fine pointers. |
+| Sections | Static page layout | Soft page dissolves, spreading watercolor spots and washes, drawn gold rules. |
+| Photos | Fixed taped prints | Staggered prints settle gently onto the page at their existing slight angles. |
+| Reply | Immediate visual confirmation | After a successful save, a painted balloon floats away and the thank-you note appears. The saved response remains immediately available to assistive technology. |
+| Accessibility | Static everywhere | System reduced-motion preference bypasses the cover and displays the completed page. A persistent pause control also shows finished letters and notes. |
+
+## Motion and functionality checks
+
+- Native modal dialog provides focus containment; opening has a skip button and Escape handler. Timers, observers, and scroll listeners clean up on unmount.
+- Decorative loops pause when their section leaves the viewport. Parallax uses one passive scroll listener and one scheduled animation frame; it is disabled on coarse-pointer devices and when paused/reduced.
+- Animation uses transform/opacity, plus short SVG stroke-dash animations. Existing lightweight SVGs are reused; no new packages or large image downloads were added. Gallery photos remain lazy-loaded.
+- Backend handlers, invite-token behavior, OG image, form validation, and the DOM-enabled test configuration are unchanged.
+- Ran the actual cover-routing and parallax helper logic in Node with TypeScript export/type syntax stripped: seven assertions passed. Added corresponding Vitest tests. Asset paths, CSS structure, whitespace, reduced-motion/pause safeguards, and unchanged backend sources passed static checks.
+- Full TypeScript build, Vitest and rendered browser checks remain unavailable locally because dependencies are missing. This is not a claim of verified smoothness on devices or a successful Netlify deploy.
+
+## Netlify review
+
+Open the home page in a fresh tab session to see the cover. Verify keyboard opening/skip/Escape, scrolling reveals, pause/play, OS reduced-motion, phone layout, browser back, and direct `/rsvp?invite=preview`. The balloon confirmation runs only after a successful backend response; Apps Script integration is still a later step.
+
+---
+
+## Previous design record
+
 # Storybook watercolor update
 
 The latest brief replaces the earlier stationery direction with a static watercolor storybook. All new illustrations are original SVG paths with translucent pigment layers and seeded edge distortion. They do not reference existing book artwork. The original hero photo/cutout and OG image are unchanged.
