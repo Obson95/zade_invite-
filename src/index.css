@@ -252,8 +252,8 @@ a { color: inherit; }
 .layout-milestones { display: flex; flex-direction: column; }
 .milestones-wash { right: -30%; top: 22%; width: 84%; }
 .milestones { position: relative; z-index: 2; flex: 1 1 auto; display: grid; grid-auto-rows: minmax(0, 1fr); gap: .9em; margin-top: 1em; }
-.milestones li { display: grid; grid-template-columns: 23% 1fr; gap: 1em; align-items: center; min-height: 0; }
-.milestones li:nth-child(even) { grid-template-columns: 1fr 23%; }
+.milestones li { display: grid; grid-template-columns: 31% 1fr; gap: 1em; align-items: center; min-height: 0; }
+.milestones li:nth-child(even) { grid-template-columns: 1fr 31%; }
 .milestones li:nth-child(even) .print { order: 2; }
 .milestones li:nth-child(even) > div { text-align: right; }
 .milestones .print { padding: 4%; aspect-ratio: 1; }

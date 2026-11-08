@@ -118,8 +118,8 @@ export const pages: BookPage[] = [
     items: [
       { label: "Hello, Zade", note: "The first day we met him. He was so small and so cute.", photo: photo("hello-zade", 900, 1200, "Newborn Zade asleep in a striped hospital blanket and a little hat.", "", "50% 40%") },
       { label: "That first smile", note: "He loves to laugh, and when he laughs, everyone in the room laughs with him.", photo: photo("first-smile", 675, 1200, "Baby Zade in his bouncer with a white bib, smiling a big gummy smile.", "", "50% 22%") },
-      { label: "Finding his feet", note: "Pulling himself up on anything he could reach, and so proud of it.", photo: photo("finding-his-feet", 675, 1200, "Zade sitting in his activity center in the living room, playing with the toys.", "", "50% 55%") },
-      { label: "One whole year", note: "Curious, cheerful, and full of personality. We love who he is becoming.", photo: photo("one-whole-year", 768, 1024, "Zade at one year old in a brown sweater, smiling at the camera.") },
+      { label: "Finding his feet", note: "Busy, curious, and into everything. If he can reach it, it’s his new favorite toy.", photo: photo("finding-his-feet", 675, 1200, "Zade sitting in his activity center in the living room, playing with the toys.", "", "50% 55%") },
+      { label: "One whole year", note: "Curious, cheerful, and full of personality. We love who he is becoming.", photo: photo("one-whole-year", 768, 1024, "Zade at one year old in a brown sweater, smiling at the camera.", "", "50% 4%") },
     ],
   },
   {
@@ -140,9 +140,9 @@ export const pages: BookPage[] = [
     photos: [
       photo("favorite-food", 676, 1200, "Zade in his high chair with a plate of pasta, food all over his hands.", "Favorite food", "50% 35%"),
       photo("nap-time", 675, 1200, "Zade fast asleep on a soft blanket with his pacifier clip.", "Nap time", "50% 22%"),
-      photo("favorite-person", 1200, 675, "Zade’s mom holding him close at an indoor playground.", "His favorite person"),
-      { src: "/images/zade-standing-683.webp", alt: "Zade standing in a hallway in his light blue outfit and white shoes.", caption: "All dressed up", width: 683, height: 1024, focus: "50% 30%" },
-      photo("playtime", 600, 800, "Zade standing at a colorful play table, looking at the camera.", "Playtime", "50% 30%"),
+      photo("favorite-person", 1200, 675, "Zade’s mom holding him close at an indoor playground.", "His favorite person", "50% 18%"),
+      { src: "/images/zade-standing-683.webp", alt: "Zade standing in a hallway in his light blue outfit and white shoes.", caption: "All dressed up", width: 683, height: 1024, focus: "50% 6%" },
+      photo("playtime", 600, 800, "Zade standing at a colorful play table, looking at the camera.", "Playtime", "50% 4%"),
     ],
   },
   {
