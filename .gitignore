@@ -6,3 +6,6 @@ dist
 !.env.example
 *.log
 .DS_Store
+
+# Full-size phone photos and videos (web copies are made by scripts/prepare-media.py)
+media-originals/

@@ -21,6 +21,8 @@ export interface PhotoSlot {
   caption?: string;
   width: number;
   height: number;
+  /** Which part stays in view when the print crops the photo, e.g. "50% 20%". */
+  focus?: string;
 }
 
 export interface VideoSlot {
@@ -39,7 +41,8 @@ export interface VideoSlot {
 
 export interface Milestone {
   label: string;
-  when: string;
+  /** Optional date or month shown under the label. */
+  when?: string;
   note: string;
   photo: PhotoSlot;
 }
@@ -61,10 +64,10 @@ export type BookPage =
   | (PageBase & { kind: "letter"; body: string[]; creole: string; creoleMeaning: string; signOff: string; photo: PhotoSlot })
   | (PageBase & { kind: "rsvp"; intro: string });
 
-const placeholder = (n: 1 | 2 | 3 | 4 | 5, alt: string, caption: string): PhotoSlot => {
-  const size = { 1: [600, 720], 2: [600, 600], 3: [720, 540], 4: [600, 720], 5: [720, 540] }[n];
-  return { src: `/images/book/placeholder-${n}.webp`, alt, caption, width: size[0], height: size[1] };
-};
+/** A photo from public/images/photos, made by scripts/prepare-media.py. */
+const photo = (name: string, width: number, height: number, alt: string, caption = "", focus?: string): PhotoSlot => ({
+  src: `/images/photos/${name}.webp`, alt, caption, width, height, focus,
+});
 
 export const covers = {
   title: "Zade",
@@ -92,11 +95,11 @@ export const pages: BookPage[] = [
     id: "the-day-he-arrived",
     kind: "arrival",
     title: "The day he arrived",
-    body: ["We counted his fingers. We counted his toes. Then we just looked at him.", "[Add the date, the time, and one thing you remember about that day.]"],
+    body: ["We counted his fingers. We counted his toes. Then we just looked at him.", "The world got a little brighter that day, and it has been brighter ever since."],
     photos: [
-      placeholder(1, "Placeholder for a newborn photo of Zade.", "[Newborn photo]"),
-      placeholder(2, "Placeholder for a second newborn photo.", "[First time held]"),
-      placeholder(3, "Placeholder for a third newborn photo.", "[Coming home]"),
+      photo("newborn", 900, 1200, "Newborn Zade asleep in a hospital bassinet, swaddled in a striped blanket and a white hat.", "Brand new"),
+      photo("first-time-held", 675, 1200, "Newborn Zade wrapped in a white blanket, held in a hospital bed, eyes wide open.", "First time held"),
+      photo("coming-home", 675, 1200, "A black and white photo of Zade’s car seat on a stroller, being wheeled out of the hospital.", "Coming home"),
     ],
   },
   {
@@ -105,10 +108,10 @@ export const pages: BookPage[] = [
     title: "Zade’s first year",
     intro: "It went fast. Here is some of it.",
     items: [
-      { label: "Hello, Zade", when: "[Date]", note: "[A memory from the day you met him.]", photo: placeholder(4, "Placeholder for a photo from Zade’s first days.", "") },
-      { label: "That first smile", when: "[Month]", note: "[What made him smile?]", photo: placeholder(5, "Placeholder for a photo of Zade smiling.", "") },
-      { label: "Finding his feet", when: "[Month]", note: "[A favorite moment as he grew.]", photo: placeholder(2, "Placeholder for a photo of Zade growing.", "") },
-      { label: "One whole year", when: "[Date]", note: "[What you love about him right now.]", photo: placeholder(1, "Placeholder for a recent photo of Zade.", "") },
+      { label: "Hello, Zade", note: "The first day we met him. He was so small and so cute.", photo: photo("first-smile", 675, 1200, "A close-up of tiny newborn Zade asleep, his hand resting on a white blanket.") },
+      { label: "That first smile", note: "He loves to laugh, and when he laughs, everyone in the room laughs with him.", photo: photo("happy-zade", 675, 1200, "Zade in a rust-colored outfit and little boots, arms up and laughing.") },
+      { label: "Finding his feet", note: "Pulling himself up on anything he could reach, and so proud of it.", photo: photo("finding-his-feet", 768, 1024, "Zade standing and holding onto a door frame, grinning at the camera.") },
+      { label: "One whole year", note: "Curious, cheerful, and full of personality. We love who he is becoming.", photo: photo("one-whole-year", 768, 1024, "Zade at one year old in a brown sweater, smiling at the camera.") },
     ],
   },
   {
@@ -117,9 +120,8 @@ export const pages: BookPage[] = [
     title: "Watch him grow",
     intro: "A photo can’t do these justice. Press play. The sound starts off.",
     videos: [
-      { title: "His first laugh", caption: "[Add the date]", poster: "/images/book/placeholder-6.webp", posterAlt: "Placeholder picture for the first laugh video." },
-      { title: "His first steps", caption: "[Add the date]", poster: "/images/book/placeholder-3.webp", posterAlt: "Placeholder picture for the first steps video." },
-      { title: "[Name this video]", caption: "[Add the date]", poster: "/images/book/placeholder-5.webp", posterAlt: "Placeholder picture for a third video." },
+      { title: "His first steps", caption: "One step, then another.", src: "/videos/first-steps.mp4", poster: "/images/photos/first-steps-poster.webp", posterAlt: "Zade in his baby walker in the living room." },
+      { title: "Off he goes", caption: "And now there is no stopping him.", src: "/videos/off-he-goes.mp4", poster: "/images/photos/off-he-goes-poster.webp", posterAlt: "Zade walking on his own across a wooden floor." },
     ],
   },
   {
@@ -128,12 +130,12 @@ export const pages: BookPage[] = [
     title: "Little moments",
     intro: "The small things we want to remember.",
     photos: [
-      { src: "/images/zade-standing-683.webp", alt: "Zade standing in a hallway in his light blue outfit and white shoes.", caption: "All dressed up", width: 683, height: 1024 },
-      placeholder(2, "Placeholder for a photo of Zade’s favorite toy.", "[Favorite toy]"),
-      placeholder(3, "Placeholder for a mealtime photo.", "[Favorite food]"),
-      placeholder(4, "Placeholder for a bath time photo.", "[Bath time]"),
-      placeholder(5, "Placeholder for a photo of Zade asleep.", "[Nap time]"),
-      placeholder(1, "Placeholder for a photo of Zade with someone he loves.", "[His favorite person]"),
+      photo("favorite-food", 676, 1200, "Zade in his high chair with a plate of pasta, food all over his hands.", "Favorite food", "50% 35%"),
+      photo("nap-time", 768, 1024, "Zade fast asleep face down in his crib.", "Nap time", "50% 8%"),
+      photo("favorite-person", 1200, 675, "Zade’s mom holding him close at an indoor playground.", "His favorite person"),
+      { src: "/images/zade-standing-683.webp", alt: "Zade standing in a hallway in his light blue outfit and white shoes.", caption: "All dressed up", width: 683, height: 1024, focus: "50% 30%" },
+      photo("mom-and-dad", 1200, 996, "Zade dressed up in black, held by his mom with his dad beside them.", "Mom & Dad"),
+      photo("playtime", 600, 800, "Zade standing at a colorful play table, looking at the camera.", "Playtime", "50% 30%"),
     ],
   },
   {

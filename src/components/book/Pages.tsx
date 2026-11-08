@@ -1,4 +1,4 @@
-import type { CSSProperties, ReactNode } from "react";
+import { useLayoutEffect, useRef, type CSSProperties, type ReactNode } from "react";
 import { covers, type BookPage } from "../../config/book";
 import { event } from "../../config/event";
 import { buildIcsHref, getEventDisplay } from "../../lib/event-display";
@@ -120,7 +120,7 @@ function PageBody({ page, active, invite }: { page: BookPage; active: boolean; i
                 <Print photo={item.photo} tilt={[-2, 1.6, -1.2, 2.2][i % 4]} order={i} tape={false} />
                 <div>
                   <h3>{item.label}</h3>
-                  <p className="when">{item.when}</p>
+                  {item.when ? <p className="when">{item.when}</p> : null}
                   <p>{item.note}</p>
                 </div>
               </li>
@@ -134,8 +134,8 @@ function PageBody({ page, active, invite }: { page: BookPage; active: boolean; i
           <Wash name="c" className="videos-wash" />
           <Painted art="balloon" depth={3} className="sway videos-balloon" />
           <Heading page={page}><p className="lede">{page.intro}</p></Heading>
-          <div className="video-wall">
-            {page.videos.map((video, i) => <VideoFrame key={video.title} video={video} active={active} order={i} className={i === 0 ? "video-main" : ""} />)}
+          <div className={`video-wall videos-${page.videos.length}`}>
+            {page.videos.map((video, i) => <VideoFrame key={video.title} video={video} active={active} order={i} className={i === 0 && page.videos.length !== 2 ? "video-main" : ""} />)}
           </div>
         </div>
       );
@@ -216,7 +216,7 @@ function Cover({ onOpen }: { onOpen: () => void }) {
       </span>
       <span className="cover-foot">
         <span className="cover-tagline">{covers.tagline}</span>
-        <span className="cover-hint">{covers.openHint}</span>
+        <span className="cover-hint btn-3d">{covers.openHint}</span>
       </span>
     </button>
   );
@@ -247,6 +247,53 @@ function Endpaper({ children }: { children?: ReactNode }) {
   );
 }
 
+const MIN_TEXT_PX = 11;
+
+/**
+ * Shrinks a page's type (everything on it is sized in em) until it fits
+ * without scrolling, so a phone shows the whole page like a printed book.
+ * The reply page is left alone: its form keeps 16px fields and may scroll.
+ */
+function useFitPage(skip: boolean) {
+  const ref = useRef<HTMLElement>(null);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el || skip) return;
+    let frame = 0;
+    const fit = () => {
+      el.style.fontSize = "";
+      let size = parseFloat(getComputedStyle(el).fontSize);
+      while (el.scrollHeight > el.clientHeight + 1 && size > MIN_TEXT_PX) {
+        size = Math.max(MIN_TEXT_PX, size - 0.5);
+        el.style.fontSize = `${size}px`;
+      }
+    };
+    const schedule = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(fit);
+    };
+    fit();
+    const observer = new ResizeObserver(schedule);
+    observer.observe(el);
+    void document.fonts?.ready.then(schedule);
+    return () => {
+      cancelAnimationFrame(frame);
+      observer.disconnect();
+    };
+  }, [skip]);
+  return ref;
+}
+
+function PageFace({ face, active, invite }: { face: Extract<Face, { kind: "page" }>; active: boolean; invite: InviteTokenState }) {
+  const ref = useFitPage(face.page.kind === "rsvp");
+  return (
+    <article className={`page page-${face.page.kind}`} ref={ref}>
+      <PageBody page={face.page} active={active} invite={invite} />
+      <span className="folio" aria-label={`Page ${face.number}`}>{face.number}</span>
+    </article>
+  );
+}
+
 export function FaceContent({ face, active, invite, onOpen }: { face: Face; active: boolean; invite: InviteTokenState; onOpen: () => void }) {
   switch (face.kind) {
     case "cover":
@@ -273,11 +320,6 @@ export function FaceContent({ face, active, invite, onOpen }: { face: Face; acti
     case "blank":
       return <div className="blank-page" />;
     case "page":
-      return (
-        <article className={`page page-${face.page.kind}`}>
-          <PageBody page={face.page} active={active} invite={invite} />
-          <span className="folio" aria-label={`Page ${face.number}`}>{face.number}</span>
-        </article>
-      );
+      return <PageFace face={face} active={active} invite={invite} />;
   }
 }

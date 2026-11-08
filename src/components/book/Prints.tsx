@@ -6,7 +6,7 @@ export function Print({ photo, tilt = 0, order = 0, tape = true, className = "" 
   const style = { "--tilt": `${tilt}deg`, "--order": order } as CSSProperties;
   return (
     <figure className={`print ${tape ? "has-tape" : ""} ${className}`} style={style}>
-      <img src={photo.src} alt={photo.alt} width={photo.width} height={photo.height} decoding="async" draggable={false} />
+      <img src={photo.src} alt={photo.alt} width={photo.width} height={photo.height} decoding="async" draggable={false} style={photo.focus ? { objectPosition: photo.focus } : undefined} />
       {photo.caption ? <figcaption>{photo.caption}</figcaption> : null}
     </figure>
   );

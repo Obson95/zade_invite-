@@ -122,7 +122,7 @@ export function RsvpForm({ invite, intro }: { invite: InviteTokenState; intro: s
         {phase.s === "error" && (
           <div role="alert" className="reply-status">
             <p>{phase.message}</p>
-            <button type="button" className="send-button" onClick={() => window.location.reload()}>
+            <button type="button" className="send-button btn-3d" onClick={() => window.location.reload()}>
               Try again
             </button>
           </div>
@@ -423,7 +423,7 @@ function RsvpFields({
       )}
 
       <div className="reply-send">
-        <button type="submit" className="send-button" disabled={submitting || disabled}>
+        <button type="submit" className="send-button btn-3d" disabled={submitting || disabled}>
           {submitting ? "Sending…" : info.rsvpStatus || initial ? "Update my RSVP" : "Send RSVP"}
         </button>
       </div>

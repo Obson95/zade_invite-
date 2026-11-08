@@ -11,6 +11,10 @@ import { FaceContent } from "./Pages";
 const SPREAD_QUERY = "(min-width: 900px) and (min-aspect-ratio: 11/10)";
 const REDUCED_QUERY = "(prefers-reduced-motion: reduce)";
 const PAGE_RATIO = 0.74;
+/** Phone pages: width ÷ height stays between these, with this much sky around. */
+const SINGLE_RATIO_MIN = 0.56;
+const SINGLE_RATIO_MAX = 0.74;
+const SINGLE_MARGIN = 14;
 const TITLE = "Zade is turning one | A birthday invitation";
 
 function useMedia(query: string) {
@@ -113,8 +117,12 @@ export function Book({ invite }: { invite: InviteTokenState }) {
     const el = stage.current!;
     const measure = () => {
       const { clientWidth: w, clientHeight: h } = el;
-      const pw = spread ? Math.floor(Math.min((w - 72) / 2, (h - 32) * PAGE_RATIO, 760)) : Math.floor(Math.min(w, 640));
-      const ph = spread ? Math.floor(pw / PAGE_RATIO) : h;
+      // One page at a time still looks like a book: sky around it, page
+      // edges on the right, never taller than a printed page.
+      const pw = spread
+        ? Math.floor(Math.min((w - 72) / 2, (h - 32) * PAGE_RATIO, 760))
+        : Math.floor(Math.min(w - 2 * SINGLE_MARGIN - 8, (h - 2 * SINGLE_MARGIN) * SINGLE_RATIO_MAX, 560));
+      const ph = spread ? Math.floor(pw / PAGE_RATIO) : Math.floor(Math.min(h - 2 * SINGLE_MARGIN, pw / SINGLE_RATIO_MIN));
       root.current!.style.setProperty("--pw", `${pw}px`);
       root.current!.style.setProperty("--ph", `${ph}px`);
       engine.current!.resize(pw, ph);
@@ -240,7 +248,7 @@ export function Book({ invite }: { invite: InviteTokenState }) {
         <button type="button" className="tool" onClick={() => step(-1)} disabled={view === 0}><span aria-hidden="true">←</span> Back</button>
         <button type="button" className="tool tool-index" ref={indexButton} aria-expanded={indexOpen} aria-controls="book-index" onClick={() => setIndexOpen((o) => !o)}>Contents</button>
         <p className="place">{place}</p>
-        {rsvpFace >= 0 ? <button type="button" className="tool tool-rsvp" onClick={() => jumpToFace(rsvpFace)}>RSVP</button> : null}
+        {rsvpFace >= 0 ? <button type="button" className="tool tool-rsvp btn-3d" onClick={() => jumpToFace(rsvpFace)}>RSVP</button> : null}
         <button type="button" className="tool" onClick={() => step(1)} disabled={view === lastView}>Next <span aria-hidden="true">→</span></button>
       </nav>
 
