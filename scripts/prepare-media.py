@@ -9,6 +9,8 @@ Videos  -> public/videos/<name>.mp4          (540px wide, H.264, starts fast)
 Posters -> public/images/photos/<name>-poster.webp
 """
 
+from __future__ import annotations
+
 import os
 import subprocess
 import sys
@@ -39,7 +41,9 @@ PHOTO_FILES = {
     "favorite_person.jpeg": "favorite-person",
     "mom_dad.JPEG": "mom-and-dad",
 }
-VIDEO_FILES = {"first_step.mov": "first-steps", "first_steps-2.mov": "off-he-goes"}
+# original file -> (web name, seconds to keep or None for all)
+# first_step.mov ends with a CapCut outro from about 20.53s, so it stops at 20.5s.
+VIDEO_FILES = {"first_step.mov": ("first-steps", 20.5), "first_steps-2.mov": ("off-he-goes", None)}
 
 
 def trim_black_bars(im: Image.Image) -> Image.Image:
@@ -57,10 +61,11 @@ def photo(src: str, name: str) -> None:
     print(f"{name}: {im.width}x{im.height}, {os.path.getsize(out) // 1024} KB")
 
 
-def video(ffmpeg: str, src: str, name: str) -> None:
+def video(ffmpeg: str, src: str, name: str, keep: float | None) -> None:
     path = os.path.join(SRC, src)
     mp4 = os.path.join(VIDEOS, f"{name}.mp4")
-    subprocess.run([ffmpeg, "-y", "-loglevel", "error", "-i", path, "-vf", "scale=540:-2", "-c:v", "libx264",
+    trim = ["-t", str(keep)] if keep else []
+    subprocess.run([ffmpeg, "-y", "-loglevel", "error", "-i", path, *trim, "-vf", "scale=540:-2", "-c:v", "libx264",
                     "-preset", "slow", "-crf", "27", "-profile:v", "high", "-pix_fmt", "yuv420p", "-c:a", "aac",
                     "-b:a", "96k", "-movflags", "+faststart", "-map_metadata", "-1", mp4], check=True)
     jpg = os.path.join(PHOTOS, f"{name}-poster.jpg")
@@ -77,8 +82,8 @@ def main() -> None:
     for src, name in PHOTO_FILES.items():
         photo(src, name)
     if len(sys.argv) > 1:
-        for src, name in VIDEO_FILES.items():
-            video(sys.argv[1], src, name)
+        for src, (name, keep) in VIDEO_FILES.items():
+            video(sys.argv[1], src, name, keep)
 
 
 if __name__ == "__main__":
