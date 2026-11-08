@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { formatEventDate, formatTime, isPastDeadline, isValidDateString, remainingUntil, todayInZone, zonedTimeToUtc } from "../src/lib/time";
 import { buildIcsHref, getEventDisplay } from "../src/lib/event-display";
-import { event, isEventConfirmed, missingEventFields } from "../src/config/event";
+import { event, isEventConfirmed, missingEventFields, rsvpClosed } from "../src/config/event";
 
 describe("time helpers", () => {
   it("converts New York wall time to UTC in winter (EST, -5)", () => {
@@ -71,5 +71,16 @@ describe("event config", () => {
     const ics = decodeURIComponent(buildIcsHref(filled, d)!.split(",").slice(1).join(","));
     expect(ics).toContain("DTSTART:20270116T190000Z");
     expect(ics).toContain("DTEND:20270116T220000Z");
+  });
+});
+
+describe("RSVPs stay open after the reply-by date", () => {
+  it("accepts late replies until the end of party day, Eastern time", () => {
+    expect(rsvpClosed(event, new Date("2026-11-19T15:00:00Z"))).toBe(false); // the day after "reply by"
+    expect(rsvpClosed(event, new Date("2026-11-23T04:30:00Z"))).toBe(false); // 11:30 PM Nov 22 in New Jersey
+    expect(rsvpClosed(event, new Date("2026-11-23T05:30:00Z"))).toBe(true); // 12:30 AM Nov 23
+  });
+  it("without a separate closing day, closes after the reply-by date", () => {
+    expect(rsvpClosed({ ...event, rsvpClosesOn: null }, new Date("2026-11-19T15:00:00Z"))).toBe(true);
   });
 });

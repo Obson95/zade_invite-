@@ -7,9 +7,8 @@
  *   { inviteToken, attending, partySize?, message?, dietaryNotes? }
  * → { ok: true, attending, partySize, updated? } | { ok: false, error, field? }
  */
-import { event } from "../../src/config/event";
+import { event, rsvpClosed } from "../../src/config/event";
 import { ABSOLUTE_MAX_PARTY, DEFAULT_PUBLIC_MAX_PARTY, validatePublicRsvp, validateRsvp } from "../../src/lib/rsvp-schema";
-import { isPastDeadline, isValidDateString, isValidTimeZone } from "../../src/lib/time";
 import { BackendNotConfigured, callAppsScript, hashToken, type AppsScriptAction } from "../lib/apps-script";
 import { clientIp, gate, json, rateLimited } from "../lib/http";
 
@@ -57,11 +56,7 @@ export default async (req: Request): Promise<Response> => {
     call = { action: "public_rsvp", ...v.value };
   }
 
-  if (
-    isValidDateString(event.rsvpDeadline) &&
-    isValidTimeZone(event.timeZone) &&
-    isPastDeadline(event.rsvpDeadline, event.timeZone)
-  ) {
+  if (rsvpClosed(event)) {
     return json(req, 410, { ok: false, error: "RSVPs are now closed. Please contact the family directly." });
   }
 

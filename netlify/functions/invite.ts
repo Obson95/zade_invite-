@@ -4,9 +4,8 @@
  * greet them and show their existing answer. Never returns other guests.
  * → { ok: true, guestName, maxPartySize, rsvpStatus, partySize, closed } | { ok: false, error }
  */
-import { event } from "../../src/config/event";
+import { event, rsvpClosed } from "../../src/config/event";
 import { ABSOLUTE_MAX_PARTY, isValidToken } from "../../src/lib/rsvp-schema";
-import { isPastDeadline, isValidDateString, isValidTimeZone } from "../../src/lib/time";
 import { BackendNotConfigured, callAppsScript, hashToken } from "../lib/apps-script";
 import { clientIp, gate, json, rateLimited } from "../lib/http";
 
@@ -29,10 +28,7 @@ export default async (req: Request): Promise<Response> => {
       if (r.code === "rate_limited") return json(req, 429, { ok: false, error: "Too many attempts. Please try again later." });
       return json(req, 404, { ok: false, error: "This invitation link isn't valid or has expired." });
     }
-    const configClosed =
-      isValidDateString(event.rsvpDeadline) &&
-      isValidTimeZone(event.timeZone) &&
-      isPastDeadline(event.rsvpDeadline, event.timeZone);
+    const configClosed = rsvpClosed(event);
     return json(req, 200, {
       ok: true,
       guestName: r.guestName ?? "",

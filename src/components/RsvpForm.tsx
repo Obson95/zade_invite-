@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState, type FormEvent } from "react";
-import { event } from "../config/event";
+import { event, rsvpClosed } from "../config/event";
 import { calendarLink, getEventDisplay } from "../lib/event-display";
 import type { InviteTokenState } from "../lib/invite-token";
 import {
@@ -9,7 +9,6 @@ import {
   MAX_MESSAGE_LENGTH,
   MAX_NAME_LENGTH,
 } from "../lib/rsvp-schema";
-import { isPastDeadline, isValidDateString, isValidTimeZone } from "../lib/time";
 
 interface InviteInfo {
   guestName: string;
@@ -32,8 +31,7 @@ interface Draft {
 }
 
 function publicInfo(): InviteInfo {
-  const closed =
-    isValidDateString(event.rsvpDeadline) && isValidTimeZone(event.timeZone) && isPastDeadline(event.rsvpDeadline, event.timeZone);
+  const closed = rsvpClosed(event);
   return { guestName: "", maxPartySize: event.maxGuestsPerInvite ?? DEFAULT_PUBLIC_MAX_PARTY, rsvpStatus: "", partySize: 0, closed };
 }
 

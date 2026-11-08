@@ -13,6 +13,8 @@
  *  the invitation emails read their facts from the sheet.
  */
 
+import { isPastDeadline, isValidDateString, isValidTimeZone } from "../lib/time";
+
 export interface EventConfig {
   child: { fullName: string; firstName: string };
   occasion: string;
@@ -29,8 +31,13 @@ export interface EventConfig {
   dressCode: string | null;
   /** Optional. If null, a Google Maps search link is built from the address. */
   mapUrl: string | null;
-  /** "YYYY-MM-DD" — last day RSVPs are accepted (inclusive, event time zone) */
+  /** "YYYY-MM-DD" — the "Please reply by" date guests see. */
   rsvpDeadline: string | null;
+  /**
+   * "YYYY-MM-DD" — last day the form actually accepts replies (inclusive,
+   * event time zone). Null means it closes after rsvpDeadline.
+   */
+  rsvpClosesOn: string | null;
   /** Default max people per invitation (a per-guest column can override). */
   maxGuestsPerInvite: number | null;
   /** Shown as "Questions? Contact …". Optional. */
@@ -56,7 +63,8 @@ export const event: EventConfig = {
   venueAddress: "Bellmawr, NJ 08031",
   dressCode: "White or beige. Please dress warm.",
   mapUrl: null,
-  rsvpDeadline: "2026-11-18", // Wednesday
+  rsvpDeadline: "2026-11-18", // Wednesday: what guests are asked for
+  rsvpClosesOn: "2026-11-22", // late replies are welcome up to the party
   maxGuestsPerInvite: null, // TBD — e.g. 4
   contactEmail: null, //    TBD (optional)
 
@@ -69,6 +77,12 @@ export function isEventConfirmed(e: EventConfig = event): boolean {
   return Boolean(
     e.date && e.startTime && e.timeZone && e.venueName && e.venueAddress && e.rsvpDeadline && e.maxGuestsPerInvite,
   );
+}
+
+/** True once the RSVP form should stop taking replies. */
+export function rsvpClosed(e: EventConfig = event, now: Date = new Date()): boolean {
+  const last = e.rsvpClosesOn ?? e.rsvpDeadline;
+  return isValidDateString(last) && isValidTimeZone(e.timeZone) && isPastDeadline(last, e.timeZone, now);
 }
 
 /** Missing facts, for the preview banner and the build checklist. */
