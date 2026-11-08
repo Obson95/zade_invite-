@@ -35,7 +35,7 @@ PHOTO_FILES = {
     "New_first_smile .heic": "first-smile",
     "new_find_his_feet.jpg": "finding-his-feet",
     "whole_year_2.JPG": "one-whole-year",
-    "New_playing_time .jpg": "playtime",
+    "Playing_playing .JPG": "playtime",
     "favoraite_food.heic": "favorite-food",
     "New_nap_time .heic": "nap-time",
     "favorite_person.jpeg": "favorite-person",

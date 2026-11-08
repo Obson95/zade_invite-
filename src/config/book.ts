@@ -67,7 +67,7 @@ export type BookPage =
   | (PageBase & { kind: "rsvp"; intro: string });
 
 /** A photo from public/images/photos, made by scripts/prepare-media.py. */
-const PHOTO_VERSION = 3;
+const PHOTO_VERSION = 4;
 
 /** Show the whole photo, uncropped, inside the print. */
 const whole = (slot: PhotoSlot): PhotoSlot => ({ ...slot, fit: "contain" });
@@ -141,8 +141,8 @@ export const pages: BookPage[] = [
       photo("favorite-food", 676, 1200, "Zade in his high chair with a plate of pasta, food all over his hands.", "Favorite food", "50% 35%"),
       photo("nap-time", 675, 1200, "Zade fast asleep on a soft blanket with his pacifier clip.", "Nap time", "50% 22%"),
       photo("favorite-person", 1200, 675, "Zade’s mom holding him close at an indoor playground.", "His favorite person", "50% 18%"),
-      photo("all-dressed-up", 554, 1200, "Zade standing by a mirror in a cap, a green striped shirt, white shorts and sandals, grinning.", "All dressed up", "50% 16%"),
-      photo("playtime", 486, 749, "Zade sitting on a play mat, stacking colorful cups and balls.", "Playtime", "50% 3%"),
+      photo("all-dressed-up", 554, 1200, "Zade standing by a mirror in a cap, a green striped shirt, white shorts and sandals, grinning.", "All dressed up", "62% 50%"),
+      photo("playtime", 600, 800, "Zade leaning on a colorful play mat with a green ring toy, smiling at the camera.", "Playtime", "50% 25%"),
     ],
   },
   {
