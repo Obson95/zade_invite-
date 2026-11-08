@@ -150,7 +150,6 @@ export function RsvpForm({ invite, intro }: { invite: InviteTokenState; intro: s
           <Confirmation
             name={phase.name}
             attending={phase.attending}
-            partySize={phase.partySize}
             onChange={() => setPhase({ s: "ready", info: phase.info })}
           />
         )}
@@ -159,7 +158,7 @@ export function RsvpForm({ invite, intro }: { invite: InviteTokenState; intro: s
   );
 }
 
-function Confirmation({ name, attending, partySize, onChange }: { name: string; attending: boolean; partySize: number; onChange: () => void }) {
+function Confirmation({ name, attending, onChange }: { name: string; attending: boolean; onChange: () => void }) {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => ref.current?.focus({ preventScroll: true }), []);
   return (
@@ -170,7 +169,7 @@ function Confirmation({ name, attending, partySize, onChange }: { name: string; 
         <p>
           Thank you{name ? `, ${name.split(" ")[0]}` : ""}.{" "}
           {attending
-            ? `Your RSVP for ${partySize} ${partySize === 1 ? "guest" : "guests"} is saved.`
+            ? "Your RSVP is saved. We can’t wait to see you."
             : "Your reply is saved. Thank you for letting us know."}
         </p>
         <button type="button" onClick={onChange} className="change-reply">Change my response</button>
@@ -193,13 +192,13 @@ function RsvpFields({
   onDone: (d: Draft) => void;
 }) {
   const uid = useId();
-  const max = Math.max(1, info.maxPartySize || 1);
   const [guestName, setGuestName] = useState(initial?.guestName ?? "");
   const [email, setEmail] = useState(initial?.email ?? "");
   const [attending, setAttending] = useState<boolean | null>(
     initial ? initial.attending : info.rsvpStatus === "yes" ? true : info.rsvpStatus === "no" ? false : null,
   );
-  const [partySize, setPartySize] = useState(Math.min(Math.max(initial?.partySize || info.partySize || 1, 1), max));
+  // No party-size question: the server counts each "yes" as 1.
+  const partySize = 1;
   const [message, setMessage] = useState(initial?.message ?? "");
   const [dietary, setDietary] = useState(initial?.dietary ?? "");
   const [honeypot, setHoneypot] = useState("");
@@ -231,7 +230,6 @@ function RsvpFields({
         ? { guestName: guestName.trim(), attending, website: honeypot, formMs: Date.now() - openedAt.current }
         : { inviteToken: token, attending };
       if (isPublic && email.trim()) body.email = email.trim();
-      if (attending) body.partySize = partySize;
       if (message.trim()) body.message = message.trim();
       if (attending && event.askDietaryNotes && dietary.trim()) body.dietaryNotes = dietary.trim();
       const { status, data } = await postJson<{ ok: boolean; error?: string; field?: string }>("/.netlify/functions/rsvp", body);
@@ -352,32 +350,6 @@ function RsvpFields({
       <>
         {attending && (
           <div key="party">
-            {max > 1 ? (
-              <div className="field">
-                <label htmlFor={`${uid}-party`} className="field-label">
-                  How many in your party (including you)?
-                </label>
-                <select
-                  id={`${uid}-party`}
-                  value={partySize}
-                  onChange={(e) => setPartySize(Number(e.target.value))}
-                  disabled={disabled}
-                  aria-describedby={`${uid}-party-hint`}
-                >
-                  {Array.from({ length: max }, (_, i) => i + 1).map((n) => (
-                    <option key={n} value={n}>
-                      {n} {n === 1 ? "guest" : "guests"}
-                    </option>
-                  ))}
-                </select>
-                <p id={`${uid}-party-hint`} className="reply-hint">
-                  {isPublic ? `Up to ${max} people, including you.` : `Your invitation includes up to ${max} ${max === 1 ? "guest" : "guests"}.`}
-                </p>
-              </div>
-            ) : (
-              <p className="reply-hint">This invitation is for 1 guest.</p>
-            )}
-
             {event.askDietaryNotes && (
               <div className="field">
                 <label htmlFor={`${uid}-diet`} className="field-label">

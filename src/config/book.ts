@@ -23,6 +23,8 @@ export interface PhotoSlot {
   height: number;
   /** Which part stays in view when the print crops the photo, e.g. "50% 20%". */
   focus?: string;
+  /** "contain" shows the whole photo instead of cropping it to the print. */
+  fit?: "contain";
 }
 
 export interface VideoSlot {
@@ -65,6 +67,9 @@ export type BookPage =
   | (PageBase & { kind: "rsvp"; intro: string });
 
 /** A photo from public/images/photos, made by scripts/prepare-media.py. */
+/** Show the whole photo, uncropped, inside the print. */
+const whole = (slot: PhotoSlot): PhotoSlot => ({ ...slot, fit: "contain" });
+
 const photo = (name: string, width: number, height: number, alt: string, caption = "", focus?: string): PhotoSlot => ({
   src: `/images/photos/${name}.webp`, alt, caption, width, height, focus,
 });
@@ -97,9 +102,9 @@ export const pages: BookPage[] = [
     title: "The day he arrived",
     body: ["We counted his fingers. We counted his toes. Then we just looked at him.", "The world got a little brighter that day, and it has been brighter ever since."],
     photos: [
-      photo("newborn", 900, 1200, "Newborn Zade asleep in a hospital bassinet, swaddled in a striped blanket and a white hat.", "Brand new"),
-      photo("first-time-held", 675, 1200, "Newborn Zade wrapped in a white blanket, held in a hospital bed, eyes wide open.", "First time held"),
-      photo("coming-home", 675, 1200, "A black and white photo of Zade’s car seat on a stroller, being wheeled out of the hospital.", "Coming home"),
+      whole(photo("newborn", 900, 1200, "Newborn Zade asleep in a hospital bassinet, swaddled in a striped blanket and a white hat.", "Brand new")),
+      whole(photo("first-time-held", 675, 1200, "Newborn Zade wrapped in a white blanket, held in a hospital bed, eyes wide open.", "First time held")),
+      whole(photo("coming-home", 675, 1200, "A black and white photo of Zade’s car seat on a stroller, being wheeled out of the hospital.", "Coming home")),
     ],
   },
   {
@@ -108,7 +113,7 @@ export const pages: BookPage[] = [
     title: "Zade’s first year",
     intro: "It went fast. Here is some of it.",
     items: [
-      { label: "Hello, Zade", note: "The first day we met him. He was so small and so cute.", photo: photo("first-smile", 675, 1200, "A close-up of tiny newborn Zade asleep, his hand resting on a white blanket.") },
+      { label: "Hello, Zade", note: "The first day we met him. He was so small and so cute.", photo: whole(photo("first-smile", 675, 1200, "A close-up of tiny newborn Zade asleep, his hand resting on a white blanket.")) },
       { label: "That first smile", note: "He loves to laugh, and when he laughs, everyone in the room laughs with him.", photo: photo("happy-zade", 675, 1200, "Zade in a rust-colored outfit and little boots, arms up and laughing.") },
       { label: "Finding his feet", note: "Pulling himself up on anything he could reach, and so proud of it.", photo: photo("finding-his-feet", 768, 1024, "Zade standing and holding onto a door frame, grinning at the camera.") },
       { label: "One whole year", note: "Curious, cheerful, and full of personality. We love who he is becoming.", photo: photo("one-whole-year", 768, 1024, "Zade at one year old in a brown sweater, smiling at the camera.") },
@@ -118,7 +123,7 @@ export const pages: BookPage[] = [
     id: "watch-him-grow",
     kind: "videos",
     title: "Watch him grow",
-    intro: "A photo can’t do these justice. Press play. The sound starts off.",
+    intro: "A photo can’t do these justice. Tap the speaker for sound.",
     videos: [
       { title: "His first steps", caption: "One step, then another.", src: "/videos/first-steps.mp4", poster: "/images/photos/first-steps-poster.webp", posterAlt: "Zade in his baby walker in the living room." },
       { title: "Off he goes", caption: "And now there is no stopping him.", src: "/videos/off-he-goes.mp4", poster: "/images/photos/off-he-goes-poster.webp", posterAlt: "Zade walking on his own across a wooden floor." },

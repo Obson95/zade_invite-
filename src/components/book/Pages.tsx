@@ -103,8 +103,9 @@ function PageBody({ page, active, invite }: { page: BookPage; active: boolean; i
           <Twinkles at={[[80, 6, 0.9], [90, 21, 0.6], [69, 15, 0.55]]} />
           <Heading page={page} />
           <div className="arrival-prints">
-            <Print photo={page.photos[0]} tilt={-2.4} className="arrival-main" />
-            {page.photos.slice(1).map((photo, i) => <Print key={photo.src} photo={photo} tilt={i ? -1.5 : 2.6} order={i + 1} />)}
+            {/* Each cell is a size container, so its print can shrink to hug the whole photo. */}
+            <div className="arrival-cell arrival-main"><Print photo={page.photos[0]} tilt={-2.4} /></div>
+            {page.photos.slice(1).map((photo, i) => <div className="arrival-cell" key={photo.src}><Print photo={photo} tilt={i ? -1.5 : 2.6} order={i + 1} /></div>)}
           </div>
           <div className="arrival-text">{page.body.map((line) => <p key={line}>{line}</p>)}</div>
         </div>
@@ -252,15 +253,18 @@ const MIN_TEXT_PX = 11;
 /**
  * Shrinks a page's type (everything on it is sized in em) until it fits
  * without scrolling, so a phone shows the whole page like a printed book.
- * The reply page is left alone: its form keeps 16px fields and may scroll.
+ * Form fields stay at 16px (so phones don't zoom in); if a page still can't
+ * fit, it scrolls.
  */
-function useFitPage(skip: boolean) {
+function useFitPage() {
   const ref = useRef<HTMLElement>(null);
   useLayoutEffect(() => {
     const el = ref.current;
-    if (!el || skip) return;
+    if (!el) return;
     let frame = 0;
     const fit = () => {
+      // Don't reflow a form under someone's fingers while the keyboard is up.
+      if (el.contains(document.activeElement) && document.activeElement?.matches("input, textarea, select")) return;
       el.style.fontSize = "";
       let size = parseFloat(getComputedStyle(el).fontSize);
       while (el.scrollHeight > el.clientHeight + 1 && size > MIN_TEXT_PX) {
@@ -275,17 +279,19 @@ function useFitPage(skip: boolean) {
     fit();
     const observer = new ResizeObserver(schedule);
     observer.observe(el);
+    // The content grows too (an error message, the thank-you note).
+    if (el.firstElementChild) observer.observe(el.firstElementChild);
     void document.fonts?.ready.then(schedule);
     return () => {
       cancelAnimationFrame(frame);
       observer.disconnect();
     };
-  }, [skip]);
+  }, []);
   return ref;
 }
 
 function PageFace({ face, active, invite }: { face: Extract<Face, { kind: "page" }>; active: boolean; invite: InviteTokenState }) {
-  const ref = useFitPage(face.page.kind === "rsvp");
+  const ref = useFitPage();
   return (
     <article className={`page page-${face.page.kind}`} ref={ref}>
       <PageBody page={face.page} active={active} invite={invite} />
