@@ -336,30 +336,24 @@ a { color: inherit; }
 .signature { font: 400 2.5em/1.2 var(--font-script); }
 
 /* ── Page 8: the reply card ─────────────────────────────────────────── */
-/* The reply page never scrolls. The card fits the page; inside it, only the
-   fields scroll, and Send stays pinned at the bottom of the card. */
+/* The reply page never scrolls. The card fits the page and scrolls up and
+   down inside itself (never sideways); Send sticks to the card's bottom edge.
+   Everything above the fields scrolls away too, so the keyboard can't leave
+   the heading or the family note sitting where the field should be. */
 .page.page-rsvp { overflow: hidden; }
-.page-rsvp > div { height: 100%; min-height: 0; padding: 4% 6.5% 2.4em; display: flex; align-items: flex-start; justify-content: center; }
-.page-rsvp .layout-rsvp { display: flex; flex-direction: column; width: 100%; height: 100%; min-height: 0; }
-.page-rsvp .reply-card { display: flex; flex-direction: column; max-height: 100%; min-height: 0; }
-.reply-live { display: flex; flex-direction: column; flex: 0 1 auto; min-height: 0; overflow: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
-.reply-form { display: flex; flex-direction: column; flex: 0 1 auto; min-height: 0; }
-.reply-fields {
-  flex: 0 1 auto;
+.page-rsvp > div { height: 100%; min-height: 0; padding: 4% 6.5% 2.4em; display: flex; flex-direction: column; align-items: stretch; justify-content: center; }
+.page-rsvp .reply-card {
+  max-height: 100%;
   min-height: 0;
-  overflow: auto;
+  overflow: hidden auto;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
-  margin: 0 -.5em;
-  padding: 0 .5em .4em;
-  /* Soft shadows at the top/bottom edges show there is more to scroll. */
-  background:
-    linear-gradient(#fffdf8 30%, rgb(255 253 248 / 0)) top / 100% 2em no-repeat local,
-    linear-gradient(rgb(255 253 248 / 0), #fffdf8 70%) bottom / 100% 2em no-repeat local,
-    radial-gradient(farthest-side at 50% 0, rgb(31 42 68 / .2), transparent) top / 100% .7em no-repeat scroll,
-    radial-gradient(farthest-side at 50% 100%, rgb(31 42 68 / .2), transparent) bottom / 100% .7em no-repeat scroll;
+  padding-bottom: 0;
+  /* Keep a focused field clear of the sticky Send bar. */
+  scroll-padding: 1em 0 6em;
 }
-.reply-send { flex: none; padding-top: .6em; border-top: 1px solid rgb(143 115 56 / .35); }
+.reply-send { position: sticky; bottom: 0; z-index: 3; margin-inline: -.6em; padding: .65em .6em 1.1em; background: #fffdf8; border-top: 1px solid rgb(143 115 56 / .35); }
+.page-rsvp .rsvp-confirmation { padding-bottom: 1.2em; overflow-x: clip; }
 .reply-family { margin-top: .5em; padding: .4em .6em; background: var(--sky-pale); font-size: .88em; line-height: 1.35; }
 .rsvp-wash { left: -24%; top: 30%; width: 96%; }
 .reply-card { position: relative; z-index: 2; width: 100%; padding: 1.15em 1.3em 1.2em; background: #fffdf8; border: 1px solid var(--ink); outline: 1px solid var(--gold); outline-offset: -5px; box-shadow: 0 8px 14px -9px rgb(31 42 68 / .36); font-size: .95em; }
@@ -389,11 +383,11 @@ fieldset.field { border: 0; padding: 0; min-width: 0; margin-inline: 0; }
 .choice strong { display: block; font-weight: 500; line-height: 1.25; }
 .choice small { display: block; font-size: .82em; line-height: 1.25; color: var(--ink-soft); }
 .choice:has(input:disabled) { cursor: not-allowed; }
-.reply-send { margin-top: .7em; }
+
 .send-button { min-height: 48px; padding: .55em 1.6em; margin-bottom: 5px; }
 .send-button:disabled { background: #e6e1d6; color: #565a66; cursor: not-allowed; box-shadow: 0 3px 0 #c9c2b2; }
 .send-button:disabled::after { display: none; }
-.honeypot { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.honeypot { position: absolute; left: 0; top: 0; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .rsvp-confirmation { position: relative; margin-top: .8em; }
 .reply-flight { position: absolute; right: 2%; top: -1em; width: 4.2em; opacity: 0; pointer-events: none; animation: balloon-away 4.2s .3s ease-in both; }
 .thank-you-note { position: relative; animation: note-arrives .5s ease-out both; }
