@@ -54,7 +54,7 @@ export const event: EventConfig = {
   timeZone: "America/New_York",
   venueName: "205 Walnut Ave",
   venueAddress: "Bellmawr, NJ 08031",
-  dressCode: "White or beige. Dress warm: we’ll be in a heated tent in the backyard.",
+  dressCode: "White or beige. Please dress warm.",
   mapUrl: null,
   rsvpDeadline: "2026-11-18", // Wednesday
   maxGuestsPerInvite: null, // TBD — e.g. 4
