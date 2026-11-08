@@ -32,7 +32,7 @@ PHOTO_FILES = {
     "first_time_held.JPG": "first-time-held",
     "New_Coming_Home.heic": "coming-home",
     "new_hello_zade.HEIC": "hello-zade",
-    "Happy_zade.jpeg": "happy-zade",
+    "New_first_smile .heic": "first-smile",
     "new_find_his_feet.jpg": "finding-his-feet",
     "whole_year_2.JPG": "one-whole-year",
     "whole_year.JPG": "playtime",

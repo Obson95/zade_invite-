@@ -114,7 +114,7 @@ export const pages: BookPage[] = [
     intro: "It went fast. Here is some of it.",
     items: [
       { label: "Hello, Zade", note: "The first day we met him. He was so small and so cute.", photo: photo("hello-zade", 900, 1200, "Newborn Zade asleep in a striped hospital blanket and a little hat.", "", "50% 40%") },
-      { label: "That first smile", note: "He loves to laugh, and when he laughs, everyone in the room laughs with him.", photo: photo("happy-zade", 675, 1200, "Zade in a rust-colored outfit and little boots, arms up and laughing.", "", "50% 6%") },
+      { label: "That first smile", note: "He loves to laugh, and when he laughs, everyone in the room laughs with him.", photo: photo("first-smile", 675, 1200, "Baby Zade in his bouncer with a white bib, smiling a big gummy smile.", "", "50% 22%") },
       { label: "Finding his feet", note: "Pulling himself up on anything he could reach, and so proud of it.", photo: photo("finding-his-feet", 675, 1200, "Zade sitting in his activity center in the living room, playing with the toys.", "", "50% 55%") },
       { label: "One whole year", note: "Curious, cheerful, and full of personality. We love who he is becoming.", photo: photo("one-whole-year", 768, 1024, "Zade at one year old in a brown sweater, smiling at the camera.") },
     ],
