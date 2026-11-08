@@ -55,6 +55,18 @@ export function faceFromLocation(faces: Face[], pathname: string, hash: string):
   return key ? Math.max(0, findFace(faces, key)) : 0;
 }
 
+/**
+ * Where the book opens. A refresh (or Back/Forward) keeps the reader on their
+ * page. Arriving fresh, even on a forwarded link like /#little-moments, starts
+ * at the cover so everyone sees it open, except /rsvp, which goes straight to
+ * the reply card.
+ */
+export function startFace(faces: Face[], pathname: string, hash: string, navigation: string): number {
+  if (navigation === "reload" || navigation === "back_forward") return faceFromLocation(faces, pathname, hash);
+  if (pathname.replace(/\/+$/, "") === "/rsvp") return faceFromLocation(faces, pathname, hash);
+  return 0;
+}
+
 export function urlOfFace(face: Face): string {
   if (face.kind === "cover") return "/";
   return face.key === "rsvp" ? "/rsvp" : `/#${face.key}`;

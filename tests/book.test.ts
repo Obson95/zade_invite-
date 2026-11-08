@@ -7,6 +7,7 @@ import {
   isHardTurn,
   singleViews,
   spreadViews,
+  startFace,
   turnRoute,
   urlOfFace,
   viewOfFace,
@@ -169,5 +170,20 @@ describe("page fold", () => {
     expect(easePage(0)).toBe(0);
     expect(easePage(1)).toBeCloseTo(1);
     for (let t = 0; t < 1; t += 0.05) expect(easePage(t + 0.05)).toBeGreaterThanOrEqual(easePage(t));
+  });
+});
+
+describe("startFace", () => {
+  const faces = buildFaces(pages);
+  it("a fresh visit starts at the cover, even on a forwarded page link", () => {
+    expect(startFace(faces, "/", "", "navigate")).toBe(0);
+    expect(startFace(faces, "/", "#little-moments", "navigate")).toBe(0);
+  });
+  it("a refresh or Back/Forward stays on the page", () => {
+    expect(startFace(faces, "/", "#little-moments", "reload")).toBe(findFace(faces, "little-moments"));
+    expect(startFace(faces, "/", "#the-party", "back_forward")).toBe(findFace(faces, "the-party"));
+  });
+  it("the RSVP link always opens the reply card", () => {
+    expect(startFace(faces, "/rsvp", "", "navigate")).toBe(findFace(faces, "rsvp"));
   });
 });

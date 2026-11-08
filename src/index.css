@@ -236,11 +236,13 @@ a { color: inherit; }
 .arrival-wash { left: -22%; bottom: -14%; width: 88%; }
 .arrival-moon { right: 7%; top: 3.5%; width: 21%; }
 .arrival-prints { position: relative; z-index: 2; flex: 1 1 0; display: grid; grid-template-columns: 1.3fr 1fr; grid-template-rows: minmax(0, 1fr) minmax(0, 1fr); gap: 1em 1.1em; margin: 1.2em 0 1em; min-height: 15em; }
-.arrival-cell { container-type: size; min-width: 0; min-height: 0; display: grid; place-items: center; }
+.photo-cell { container-type: size; min-width: 0; min-height: 0; display: grid; place-items: center; }
 /* The print hugs its photo: as big as the cell allows, never cropped, caption inside. */
-.arrival-cell .print { padding: .45em .45em 0; }
-.arrival-cell .print-photo { width: min(100cqw - .9em - 4px, (100cqh - 2.6em) * var(--photo-ar)); }
-.arrival-cell figcaption { white-space: nowrap; }
+.photo-cell .print { padding: .45em .45em 0; }
+.photo-cell .print-photo { width: min(100cqw - .9em - 4px, (100cqh - 2.6em) * var(--photo-ar)); }
+.photo-cell figcaption { white-space: nowrap; }
+/* Page 7: the family photo fills the space between the note and the sign-off. */
+.letter-middle { position: relative; z-index: 2; flex: 1 1 0; min-height: 7em; max-height: 17em; margin: .8em 0 .4em; }
 .milestones .print-photo { flex: 1 1 0; min-height: 0; aspect-ratio: auto; }
 .arrival-main { grid-row: 1 / 3; }
 .arrival-text { position: relative; z-index: 2; max-width: 27em; }
@@ -442,6 +444,8 @@ fieldset.field { border: 0; padding: 0; min-width: 0; margin-inline: 0; }
 .is-single .collage { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(3, minmax(0, 1fr)); gap: 1em 1.1em; min-height: 0; padding: .3em .2em .4em; }
 .is-single .collage .print { position: relative; left: auto; top: auto; width: auto; min-height: 0; }
 .is-single .collage .print-photo { flex: 1 1 0; min-height: 0; aspect-ratio: auto; }
+/* Five prints: the wide one takes the whole bottom row. */
+.is-single .collage .collage-3 { order: 6; grid-column: 1 / 3; }
 @media (max-width: 899px) {
   .scene .twinkle { display: none; }
 }

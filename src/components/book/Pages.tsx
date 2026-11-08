@@ -104,8 +104,8 @@ function PageBody({ page, active, invite }: { page: BookPage; active: boolean; i
           <Heading page={page} />
           <div className="arrival-prints">
             {/* Each cell is a size container, so its print can shrink to hug the whole photo. */}
-            <div className="arrival-cell arrival-main"><Print photo={page.photos[0]} tilt={-2.4} /></div>
-            {page.photos.slice(1).map((photo, i) => <div className="arrival-cell" key={photo.src}><Print photo={photo} tilt={i ? -1.5 : 2.6} order={i + 1} /></div>)}
+            <div className="photo-cell arrival-main"><Print photo={page.photos[0]} tilt={-2.4} /></div>
+            {page.photos.slice(1).map((photo, i) => <div className="photo-cell" key={photo.src}><Print photo={photo} tilt={i ? -1.5 : 2.6} order={i + 1} /></div>)}
           </div>
           <div className="arrival-text">{page.body.map((line) => <p key={line}>{line}</p>)}</div>
         </div>
@@ -174,6 +174,9 @@ function PageBody({ page, active, invite }: { page: BookPage; active: boolean; i
             <Heading page={page} />
             <div className="letter-body">{page.body.map((line, i) => <p key={line} className={i === 0 ? "letter-first" : ""}>{line}</p>)}</div>
           </div>
+          {page.middlePhoto ? (
+            <div className="photo-cell letter-middle"><Print photo={page.middlePhoto} tilt={-1.8} order={1} /></div>
+          ) : null}
           <div className="letter-foot">
             <p className="creole" lang="ht">{page.creole}</p>
             <p className="creole-meaning">{page.creoleMeaning}</p>

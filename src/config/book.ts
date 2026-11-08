@@ -63,7 +63,7 @@ export type BookPage =
   | (PageBase & { kind: "videos"; intro: string; videos: VideoSlot[] })
   | (PageBase & { kind: "collage"; intro: string; photos: PhotoSlot[] })
   | (PageBase & { kind: "party"; intro: string })
-  | (PageBase & { kind: "letter"; body: string[]; creole: string; creoleMeaning: string; signOff: string; photo: PhotoSlot })
+  | (PageBase & { kind: "letter"; body: string[]; creole: string; creoleMeaning: string; signOff: string; photo: PhotoSlot; middlePhoto?: PhotoSlot })
   | (PageBase & { kind: "rsvp"; intro: string });
 
 /** A photo from public/images/photos, made by scripts/prepare-media.py. */
@@ -114,7 +114,7 @@ export const pages: BookPage[] = [
     intro: "It went fast. Here is some of it.",
     items: [
       { label: "Hello, Zade", note: "The first day we met him. He was so small and so cute.", photo: whole(photo("first-smile", 675, 1200, "A close-up of tiny newborn Zade asleep, his hand resting on a white blanket.")) },
-      { label: "That first smile", note: "He loves to laugh, and when he laughs, everyone in the room laughs with him.", photo: photo("happy-zade", 675, 1200, "Zade in a rust-colored outfit and little boots, arms up and laughing.") },
+      { label: "That first smile", note: "He loves to laugh, and when he laughs, everyone in the room laughs with him.", photo: photo("happy-zade", 675, 1200, "Zade in a rust-colored outfit and little boots, arms up and laughing.", "", "50% 6%") },
       { label: "Finding his feet", note: "Pulling himself up on anything he could reach, and so proud of it.", photo: photo("finding-his-feet", 768, 1024, "Zade standing and holding onto a door frame, grinning at the camera.") },
       { label: "One whole year", note: "Curious, cheerful, and full of personality. We love who he is becoming.", photo: photo("one-whole-year", 768, 1024, "Zade at one year old in a brown sweater, smiling at the camera.") },
     ],
@@ -139,7 +139,6 @@ export const pages: BookPage[] = [
       photo("nap-time", 768, 1024, "Zade fast asleep face down in his crib.", "Nap time", "50% 8%"),
       photo("favorite-person", 1200, 675, "Zade’s mom holding him close at an indoor playground.", "His favorite person"),
       { src: "/images/zade-standing-683.webp", alt: "Zade standing in a hallway in his light blue outfit and white shoes.", caption: "All dressed up", width: 683, height: 1024, focus: "50% 30%" },
-      photo("mom-and-dad", 1200, 996, "Zade dressed up in black, held by his mom with his dad beside them.", "Mom & Dad"),
       photo("playtime", 600, 800, "Zade standing at a colorful play table, looking at the camera.", "Playtime", "50% 30%"),
     ],
   },
@@ -158,6 +157,7 @@ export const pages: BookPage[] = [
     creoleMeaning: "We can’t wait to celebrate with you.",
     signOff: "Obson & Maelle",
     photo: { src: "/images/family-576.webp", alt: "Zade with his mom and dad at church.", width: 576, height: 1024 },
+    middlePhoto: photo("mom-and-dad", 1200, 996, "Zade dressed up in black, held by his mom with his dad beside them.", "The three of us"),
   },
   {
     id: "rsvp",

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, typ
 import { flushSync } from "react-dom";
 import { pages } from "../../config/book";
 import { BookEngine } from "../../lib/book-engine";
-import { buildFaces, faceFromLocation, findFace, singleViews, spreadViews, urlOfFace, viewOfFace } from "../../lib/book-model";
+import { buildFaces, faceFromLocation, findFace, singleViews, spreadViews, startFace, urlOfFace, viewOfFace } from "../../lib/book-model";
 import type { InviteTokenState } from "../../lib/invite-token";
 import { MusicToggle } from "../MusicToggle";
 import { Scene } from "./Scene";
@@ -38,7 +38,13 @@ export function Book({ invite }: { invite: InviteTokenState }) {
   const reduced = useMedia(REDUCED_QUERY);
   const views = useMemo(() => (spread ? spreadViews(faces) : singleViews(faces)), [faces, spread]);
 
-  const [face, setFace] = useState(() => faceFromLocation(faces, window.location.pathname, window.location.hash));
+  const [face, setFace] = useState(() => {
+    const nav = (performance.getEntriesByType?.("navigation")[0] as PerformanceNavigationTiming | undefined)?.type ?? "navigate";
+    const start = startFace(faces, window.location.pathname, window.location.hash, nav);
+    // A forwarded page link opens on the cover; tidy the address to match.
+    if (start === 0 && window.location.hash) window.history.replaceState(null, "", "/" + window.location.search);
+    return start;
+  });
   const [view, setView] = useState(() => viewOfFace(views, face));
   const [playing, setPlaying] = useState(true);
   const [mounted, setMounted] = useState<ReadonlySet<number>>(() => new Set([face]));
