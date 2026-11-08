@@ -43,8 +43,7 @@ PHOTO_FILES = {
     "Swagg_new.jpeg": "all-dressed-up",
 }
 # original file -> (web name, seconds to keep or None for all)
-# first_step.mov ends with a CapCut outro from about 20.53s, so it stops at 20.5s.
-VIDEO_FILES = {"first_step.mov": ("first-steps", 20.5), "first_steps-2.mov": ("off-he-goes", None)}
+VIDEO_FILES = {"first_steps-2.mov": ("first-steps", None), "Off_goes_vid .MOV": ("off-he-goes", None)}
 
 
 def trim_black_bars(im: Image.Image) -> Image.Image:

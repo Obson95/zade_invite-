@@ -128,8 +128,8 @@ export const pages: BookPage[] = [
     title: "Watch him grow",
     intro: "A photo can’t do these justice. Tap the speaker for sound.",
     videos: [
-      { title: "His first steps", caption: "One step, then another.", src: "/videos/first-steps.mp4", poster: "/images/photos/first-steps-poster.webp", posterAlt: "Zade in his baby walker in the living room." },
-      { title: "Off he goes", caption: "And now there is no stopping him.", src: "/videos/off-he-goes.mp4", poster: "/images/photos/off-he-goes-poster.webp", posterAlt: "Zade walking on his own across a wooden floor." },
+      { title: "His first steps", caption: "One step, then another.", src: "/videos/first-steps.mp4?v=2", poster: "/images/photos/first-steps-poster.webp?v=2", posterAlt: "Zade walking on his own across a wooden floor." },
+      { title: "Off he goes", caption: "And now there is no stopping him.", src: "/videos/off-he-goes.mp4?v=2", poster: "/images/photos/off-he-goes-poster.webp?v=2", posterAlt: "Zade in a striped shirt walking away across the wooden floor." },
     ],
   },
   {
