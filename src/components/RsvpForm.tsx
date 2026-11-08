@@ -41,8 +41,8 @@ type Phase =
   | { s: "loading" }
   | { s: "error"; message: string }
   | { s: "ready"; info: InviteInfo }
-  /** Shown the moment Send is pressed; `saved` flips once the sheet confirms. */
-  | { s: "done"; info: InviteInfo; attending: boolean; name: string; saved: boolean };
+  /** Only reached once the sheet has confirmed the reply. */
+  | { s: "done"; info: InviteInfo; attending: boolean; name: string };
 
 type SendResult = { ok: true } | { ok: false; text: string; field?: string };
 
@@ -79,16 +79,14 @@ export function RsvpForm({ invite, intro }: { invite: InviteTokenState; intro: s
   const mode: Mode = invite.kind === "token" ? "invite" : invite.kind === "preview" ? "preview" : "public";
   const [phase, setPhase] = useState<Phase>(() => (token ? { s: "loading" } : { s: "ready", info: publicInfo() }));
   const [draft, setDraft] = useState<Draft | null>(null);
-  const [sendError, setSendError] = useState<{ text: string; field?: string } | null>(null);
   const sending = useRef(0);
 
-  // The thank-you shows at once; the sheet takes a few seconds to confirm.
-  // If saving fails, the form comes back, filled in, with the reason.
+  // The form waits (button says "Sending your RSVP…") until the sheet answers,
+  // so the thank-you only ever appears for a reply that was really saved.
+  // A refusal (e.g. this name already replied) stays on the form.
   async function send(body: Record<string, unknown>, d: Draft, info: InviteInfo): Promise<SendResult> {
     const id = ++sending.current;
     setDraft(d);
-    setSendError(null);
-    setPhase({ s: "done", info, attending: !!d.attending, name: info.guestName || d.guestName, saved: false });
     let result: SendResult;
     try {
       const { status, data } = await postJson<{ ok: boolean; error?: string; field?: string }>("/.netlify/functions/rsvp", body);
@@ -99,10 +97,7 @@ export function RsvpForm({ invite, intro }: { invite: InviteTokenState; intro: s
     if (id !== sending.current) return result;
     if (result.ok) {
       const status = d.attending ? "yes" : "no";
-      setPhase({ s: "done", info: { ...info, rsvpStatus: status, partySize: d.attending ? 1 : 0 }, attending: !!d.attending, name: info.guestName || d.guestName, saved: true });
-    } else {
-      setSendError({ text: result.text, field: result.field });
-      setPhase({ s: "ready", info });
+      setPhase({ s: "done", info: { ...info, rsvpStatus: status, partySize: d.attending ? 1 : 0 }, attending: !!d.attending, name: info.guestName || d.guestName });
     }
     return result;
   }
@@ -167,7 +162,6 @@ export function RsvpForm({ invite, intro }: { invite: InviteTokenState; intro: s
             mode={effectiveMode}
             token={effectiveMode === "invite" ? token : null}
             initial={draft}
-            initialError={sendError}
             onSend={(body, d) => send(body, d, phase.info)}
           />
         )}
@@ -175,7 +169,6 @@ export function RsvpForm({ invite, intro }: { invite: InviteTokenState; intro: s
           <Confirmation
             name={phase.name}
             attending={phase.attending}
-            saved={phase.saved}
           />
         )}
       </div>
@@ -183,7 +176,7 @@ export function RsvpForm({ invite, intro }: { invite: InviteTokenState; intro: s
   );
 }
 
-function Confirmation({ name, attending, saved }: { name: string; attending: boolean; saved: boolean }) {
+function Confirmation({ name, attending }: { name: string; attending: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     ref.current?.focus({ preventScroll: true });
@@ -216,9 +209,7 @@ function Confirmation({ name, attending, saved }: { name: string; attending: boo
         ) : (
           <p>Thank you for letting us know. We’ll miss you, and Zade sends you a big hug.</p>
         )}
-        <p className={`thank-you-status ${saved ? "is-saved" : ""}`} role="status">
-          {saved ? "✓ Your reply is saved." : "Saving your reply…"}
-        </p>
+        <p className="thank-you-status is-saved" role="status">✓ Your reply is saved.</p>
         <p className="thank-you-change">Need to change your reply? Just let Obson &amp; Maelle know.</p>
       </div>
     </div>
@@ -230,14 +221,12 @@ function RsvpFields({
   mode,
   token,
   initial,
-  initialError,
   onSend,
 }: {
   info: InviteInfo;
   mode: Mode;
   token: string | null;
   initial: Draft | null;
-  initialError: { text: string; field?: string } | null;
   onSend: (body: Record<string, unknown>, d: Draft) => Promise<SendResult>;
 }) {
   const uid = useId();
@@ -252,7 +241,7 @@ function RsvpFields({
   const [dietary, setDietary] = useState(initial?.dietary ?? "");
   const [honeypot, setHoneypot] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<{ text: string; field?: string } | null>(initialError);
+  const [error, setError] = useState<{ text: string; field?: string } | null>(null);
   const inFlight = useRef(false);
   const openedAt = useRef(Date.now());
   const nameRef = useRef<HTMLInputElement>(null);
@@ -280,8 +269,13 @@ function RsvpFields({
     if (isPublic && email.trim()) body.email = email.trim();
     if (message.trim()) body.message = message.trim();
     if (attending && event.askDietaryNotes && dietary.trim()) body.dietaryNotes = dietary.trim();
-    // This form is replaced by the thank-you straight away; it only comes back if saving fails.
-    await onSend(body, { guestName: guestName.trim(), email: email.trim(), attending, partySize, message, dietary });
+    const result = await onSend(body, { guestName: guestName.trim(), email: email.trim(), attending, partySize, message, dietary });
+    // On success this form is replaced by the thank-you card.
+    if (!result.ok) {
+      setError({ text: result.text, field: result.field });
+      inFlight.current = false;
+      setSubmitting(false);
+    }
   }
 
   const choice = (value: boolean, label: string, sub: string) => {
@@ -430,15 +424,16 @@ function RsvpFields({
 
       </div>
 
-      {error && (
-        <p id={`${uid}-err`} role="alert" className="reply-error">
-          {error.text}
-        </p>
-      )}
-
+      {/* The error sits in the sticky bar with Send, so it is always on screen. */}
       <div className="reply-send">
+        {error && (
+          <p id={`${uid}-err`} role="alert" className="reply-error">
+            {error.text}
+          </p>
+        )}
+
         <button type="submit" className="send-button btn-3d" disabled={submitting || disabled}>
-          {submitting ? "Sending…" : info.rsvpStatus ? "Update my RSVP" : "Send RSVP"}
+          {submitting ? "Sending your RSVP…" : info.rsvpStatus ? "Update my RSVP" : "Send RSVP"}
         </button>
       </div>
     </form>

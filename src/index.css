@@ -366,6 +366,7 @@ a { color: inherit; }
 .reply-hint { margin-top: .2em; font-size: .84em; line-height: 1.3; color: var(--ink-soft); }
 .reply-count { font-size: .76em; text-align: right; color: var(--ink-soft); }
 .reply-error { margin-top: .6em; padding: .45em .65em; border-left: 3px solid #9b2c2c; background: #fbeeee; color: #7c1d1d; font-weight: 500; }
+.reply-send .reply-error { margin: 0 0 .6em; font-size: .9em; line-height: 1.35; }
 .reply-form { position: relative; }
 .field { margin-top: .75em; }
 fieldset.field { border: 0; padding: 0; min-width: 0; margin-inline: 0; }
