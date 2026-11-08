@@ -104,7 +104,7 @@ export const pages: BookPage[] = [
     photos: [
       whole(photo("newborn", 900, 1200, "Newborn Zade asleep in a hospital bassinet, swaddled in a striped blanket and a white hat.", "Brand new")),
       whole(photo("first-time-held", 675, 1200, "Newborn Zade wrapped in a white blanket, held in a hospital bed, eyes wide open.", "First time held")),
-      whole(photo("coming-home", 675, 1200, "A black and white photo of Zade’s car seat on a stroller, being wheeled out of the hospital.", "Coming home")),
+      whole(photo("coming-home", 675, 1200, "Newborn Zade asleep in his car seat in a white knit hat, ready to go home.", "Coming home")),
     ],
   },
   {
@@ -113,9 +113,9 @@ export const pages: BookPage[] = [
     title: "Zade’s first year",
     intro: "It went fast. Here is some of it.",
     items: [
-      { label: "Hello, Zade", note: "The first day we met him. He was so small and so cute.", photo: whole(photo("first-smile", 675, 1200, "A close-up of tiny newborn Zade asleep, his hand resting on a white blanket.")) },
+      { label: "Hello, Zade", note: "The first day we met him. He was so small and so cute.", photo: photo("hello-zade", 900, 1200, "Newborn Zade asleep in a striped hospital blanket and a little hat.", "", "50% 40%") },
       { label: "That first smile", note: "He loves to laugh, and when he laughs, everyone in the room laughs with him.", photo: photo("happy-zade", 675, 1200, "Zade in a rust-colored outfit and little boots, arms up and laughing.", "", "50% 6%") },
-      { label: "Finding his feet", note: "Pulling himself up on anything he could reach, and so proud of it.", photo: photo("finding-his-feet", 768, 1024, "Zade standing and holding onto a door frame, grinning at the camera.") },
+      { label: "Finding his feet", note: "Pulling himself up on anything he could reach, and so proud of it.", photo: photo("finding-his-feet", 675, 1200, "Zade sitting in his activity center in the living room, playing with the toys.", "", "50% 55%") },
       { label: "One whole year", note: "Curious, cheerful, and full of personality. We love who he is becoming.", photo: photo("one-whole-year", 768, 1024, "Zade at one year old in a brown sweater, smiling at the camera.") },
     ],
   },
@@ -136,7 +136,7 @@ export const pages: BookPage[] = [
     intro: "The small things we want to remember.",
     photos: [
       photo("favorite-food", 676, 1200, "Zade in his high chair with a plate of pasta, food all over his hands.", "Favorite food", "50% 35%"),
-      photo("nap-time", 768, 1024, "Zade fast asleep face down in his crib.", "Nap time", "50% 8%"),
+      photo("nap-time", 675, 1200, "Zade fast asleep on a soft blanket with his pacifier clip.", "Nap time", "50% 22%"),
       photo("favorite-person", 1200, 675, "Zade’s mom holding him close at an indoor playground.", "His favorite person"),
       { src: "/images/zade-standing-683.webp", alt: "Zade standing in a hallway in his light blue outfit and white shoes.", caption: "All dressed up", width: 683, height: 1024, focus: "50% 30%" },
       photo("playtime", 600, 800, "Zade standing at a colorful play table, looking at the camera.", "Playtime", "50% 30%"),

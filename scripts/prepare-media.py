@@ -30,14 +30,14 @@ LONG_EDGE = 1200
 PHOTO_FILES = {
     "new_born.JPEG": "newborn",
     "first_time_held.JPG": "first-time-held",
-    "coming_home.jpg": "coming-home",
-    "first_smile.png": "first-smile",
+    "New_Coming_Home.heic": "coming-home",
+    "new_hello_zade.HEIC": "hello-zade",
     "Happy_zade.jpeg": "happy-zade",
-    "finding_his_feet.JPG": "finding-his-feet",
+    "new_find_his_feet.jpg": "finding-his-feet",
     "whole_year_2.JPG": "one-whole-year",
     "whole_year.JPG": "playtime",
     "favoraite_food.heic": "favorite-food",
-    "nap_time.JPG": "nap-time",
+    "New_nap_time .heic": "nap-time",
     "favorite_person.jpeg": "favorite-person",
     "mom_dad.JPEG": "mom-and-dad",
 }
