@@ -32,17 +32,17 @@ var GUEST_HEADERS = [
 var SETTINGS_ROWS = [
   ['event_name', "Zade Noah Saintfleur's 1st Birthday", 'Shown in emails'],
   ['child_name', 'Zade Noah Saintfleur', ''],
-  ['event_date', 'TBD', 'YYYY-MM-DD, e.g. 2027-01-16'],
-  ['start_time', 'TBD', '24-hour HH:MM, e.g. 14:00'],
+  ['event_date', '2026-11-22', 'YYYY-MM-DD, e.g. 2027-01-16'],
+  ['start_time', '12:00', '24-hour HH:MM, e.g. 14:00'],
   ['end_time', '', 'Optional, HH:MM'],
-  ['time_zone', 'TBD', 'IANA name, e.g. America/New_York'],
-  ['venue_name', 'TBD', ''],
-  ['venue_address', 'TBD', 'Full street address'],
+  ['time_zone', 'America/New_York', 'IANA name, e.g. America/New_York'],
+  ['venue_name', '205 Walnut Ave', ''],
+  ['venue_address', 'Bellmawr, NJ 08031', 'Town, state and ZIP (the street is in venue_name)'],
   ['map_url', '', 'Optional link; otherwise a Google Maps search is used'],
-  ['site_url', 'TBD', 'https://your-site.netlify.app (no trailing slash)'],
-  ['sender_name', 'TBD', 'e.g. The Saintfleur Family'],
+  ['site_url', 'https://zade1st.netlify.app', 'https://your-site.netlify.app (no trailing slash)'],
+  ['sender_name', 'Obson & Maelle', 'e.g. The Saintfleur Family'],
   ['reply_to', '', 'Optional reply-to email address'],
-  ['rsvp_deadline', 'TBD', 'YYYY-MM-DD (inclusive, event time zone)'],
+  ['rsvp_deadline', '2026-11-18', 'YYYY-MM-DD (inclusive, event time zone)'],
   ['max_party_size', 'TBD', 'Default max people per invitation, e.g. 4']
 ];
 
