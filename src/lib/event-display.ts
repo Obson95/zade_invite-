@@ -73,9 +73,13 @@ function icsEscape(s: string): string {
   return s.replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\n/g, "\\n");
 }
 
-/** A data: URL for an .ics calendar file, or null when details are incomplete. */
-export function buildIcsHref(e: EventConfig, d: EventDisplay): string | null {
+/** Where the built site serves the calendar file (written by vite.config.ts). */
+export const ICS_PATH = "/zade-first-birthday.ics";
+
+/** The .ics calendar file's text, or null when details are incomplete. */
+export function buildIcs(e: EventConfig, d: EventDisplay): string | null {
   if (d.startUtc === null || d.endUtc === null || !e.venueName) return null;
+  const notes = [e.dressCode ? `Dress code: ${e.dressCode}` : ""].filter(Boolean).join("\n");
   const lines = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
@@ -89,8 +93,38 @@ export function buildIcsHref(e: EventConfig, d: EventDisplay): string | null {
     `DTEND:${icsDate(d.endUtc)}`,
     `SUMMARY:${icsEscape(`${e.child.fullName}'s 1st Birthday`)}`,
     `LOCATION:${icsEscape([e.venueName, e.venueAddress].filter(Boolean).join(", "))}`,
+    ...(notes ? [`DESCRIPTION:${icsEscape(notes)}`] : []),
     "END:VEVENT",
     "END:VCALENDAR",
   ];
-  return `data:text/calendar;charset=utf-8,${encodeURIComponent(lines.join("\r\n"))}`;
+  return lines.join("\r\n") + "\r\n";
+}
+
+/** A data: URL for the .ics file (used in tests; phones need the real file at ICS_PATH). */
+export function buildIcsHref(e: EventConfig, d: EventDisplay): string | null {
+  const ics = buildIcs(e, d);
+  return ics === null ? null : `data:text/calendar;charset=utf-8,${encodeURIComponent(ics)}`;
+}
+
+/** Google Calendar's "add event" page, filled in. */
+export function googleCalendarUrl(e: EventConfig, d: EventDisplay): string | null {
+  if (d.startUtc === null || d.endUtc === null || !e.venueName) return null;
+  const q = new URLSearchParams({
+    action: "TEMPLATE",
+    text: `${e.child.fullName}'s 1st Birthday`,
+    dates: `${icsDate(d.startUtc)}/${icsDate(d.endUtc)}`,
+    location: [e.venueName, e.venueAddress].filter(Boolean).join(", "),
+    details: e.dressCode ? `Dress code: ${e.dressCode}` : "",
+  });
+  return `https://calendar.google.com/calendar/render?${q.toString()}`;
+}
+
+/**
+ * The link "Add to calendar" should open. Android goes to Google Calendar;
+ * iPhone, iPad and computers open the .ics file, which offers "Add to Calendar".
+ */
+export function calendarLink(e: EventConfig, d: EventDisplay, userAgent = typeof navigator === "undefined" ? "" : navigator.userAgent): { href: string; external: boolean } | null {
+  if (buildIcs(e, d) === null) return null;
+  const google = /Android/i.test(userAgent) ? googleCalendarUrl(e, d) : null;
+  return google ? { href: google, external: true } : { href: ICS_PATH, external: false };
 }

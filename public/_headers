@@ -11,3 +11,8 @@
 
 /images/*
   Cache-Control: public, max-age=86400
+
+/zade-first-birthday.ics
+  Content-Type: text/calendar; charset=utf-8
+  Content-Disposition: inline; filename="zade-first-birthday.ics"
+  Cache-Control: public, max-age=300

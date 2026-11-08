@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef, useState, type FormEvent } from "react";
 import { event } from "../config/event";
-import { buildIcsHref, getEventDisplay } from "../lib/event-display";
+import { calendarLink, getEventDisplay } from "../lib/event-display";
 import type { InviteTokenState } from "../lib/invite-token";
 import {
   DEFAULT_PUBLIC_MAX_PARTY,
@@ -141,12 +141,15 @@ export function RsvpForm({ invite, intro }: { invite: InviteTokenState; intro: s
   return (
     <Shell title={title}>
       {phase.s !== "done" && (
-        <p className="reply-by">Please reply by {deadlineLabel || "[TBD]"}. {intro}</p>
+        <>
+          <p className="reply-by">Please reply by {deadlineLabel || "[TBD]"}. {intro}</p>
+          <p className="reply-family">Coming as a family? Each adult please RSVP separately. Kids don’t need to.</p>
+        </>
       )}
       {mode === "preview" && (
         <p className="reply-note">Preview only. Replies can&rsquo;t be sent from a preview link.</p>
       )}
-      <div aria-live="polite">
+      <div aria-live="polite" className="reply-live">
         {phase.s === "loading" && (
           <p className="reply-status">Finding your invitation…</p>
         )}
@@ -173,10 +176,6 @@ export function RsvpForm({ invite, intro }: { invite: InviteTokenState; intro: s
             name={phase.name}
             attending={phase.attending}
             saved={phase.saved}
-            onChange={() => {
-              sending.current++;
-              setPhase({ s: "ready", info: phase.info });
-            }}
           />
         )}
       </div>
@@ -184,14 +183,14 @@ export function RsvpForm({ invite, intro }: { invite: InviteTokenState; intro: s
   );
 }
 
-function Confirmation({ name, attending, saved, onChange }: { name: string; attending: boolean; saved: boolean; onChange: () => void }) {
+function Confirmation({ name, attending, saved }: { name: string; attending: boolean; saved: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     ref.current?.focus({ preventScroll: true });
-    ref.current?.closest(".page")?.scrollTo({ top: 0 });
+    ref.current?.closest(".reply-live")?.scrollTo({ top: 0 });
   }, []);
   const d = getEventDisplay(event);
-  const ics = buildIcsHref(event, d);
+  const cal = calendarLink(event, d);
   const first = name.trim().split(/\s+/)[0];
   return (
     <div ref={ref} tabIndex={-1} className={`rsvp-confirmation ${attending ? "is-yes" : "is-no"}`}>
@@ -207,9 +206,9 @@ function Confirmation({ name, attending, saved, onChange }: { name: string; atte
               <div><dt>Where</dt><dd>{[event.venueName, event.venueAddress].filter(Boolean).join(", ")}</dd></div>
               {event.dressCode ? <div><dt>Wear</dt><dd>{event.dressCode}</dd></div> : null}
             </dl>
-            {ics || d.mapUrl ? (
+            {cal || d.mapUrl ? (
               <p className="thank-you-links">
-                {ics ? <a className="btn-3d thank-you-button" href={ics} download="zade-first-birthday.ics">Add to calendar</a> : null}
+                {cal ? <a className="btn-3d thank-you-button" href={cal.href} {...(cal.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}>Add to calendar</a> : null}
                 {d.mapUrl ? <a href={d.mapUrl} target="_blank" rel="noopener noreferrer">Directions<span className="sr-only"> (opens in a new tab)</span></a> : null}
               </p>
             ) : null}
@@ -220,7 +219,7 @@ function Confirmation({ name, attending, saved, onChange }: { name: string; atte
         <p className={`thank-you-status ${saved ? "is-saved" : ""}`} role="status">
           {saved ? "✓ Your reply is saved." : "Saving your reply…"}
         </p>
-        <button type="button" onClick={onChange} className="change-reply">Change my response</button>
+        <p className="thank-you-change">Need to change your reply? Just let Obson &amp; Maelle know.</p>
       </div>
     </div>
   );
@@ -257,7 +256,6 @@ function RsvpFields({
   const inFlight = useRef(false);
   const openedAt = useRef(Date.now());
   const nameRef = useRef<HTMLInputElement>(null);
-  const sendRef = useRef<HTMLDivElement>(null);
   const isPublic = mode === "public";
   const disabled = mode === "preview" || info.closed || (mode === "invite" && !token);
 
@@ -297,11 +295,6 @@ function RsvpFields({
           onChange={() => {
             setAttending(value);
             if (error?.field === "attending") setError(null);
-            // Bring the Send button (at the bottom of the page) into view.
-            requestAnimationFrame(() => {
-              const page = sendRef.current?.closest(".page");
-              page?.scrollTo({ top: page.scrollHeight, behavior: "smooth" });
-            });
           }}
           disabled={disabled}
           aria-describedby={error?.field === "attending" ? `${uid}-err` : undefined}
@@ -316,6 +309,8 @@ function RsvpFields({
 
   return (
     <form onSubmit={onSubmit} noValidate className="reply-form" aria-busy={submitting}>
+      {/* Only this part scrolls; the Send button below always stays in view. */}
+      <div className="reply-fields">
       {!isPublic && info.guestName ? <p className="reply-welcome">Hello, <strong>{info.guestName}</strong>.</p> : null}
       {!isPublic && info.rsvpStatus && (
         <p className="reply-hint">
@@ -371,7 +366,7 @@ function RsvpFields({
               aria-describedby={`${uid}-email-hint${error?.field === "email" ? ` ${uid}-err` : ""}`}
             />
             <p id={`${uid}-email-hint`} className="reply-hint">
-              Need to change your answer later? Just RSVP again with the same email (or name).
+              So we can reach you if plans change.
             </p>
           </div>
           {/* Honeypot: hidden from people and screen readers; bots tend to fill it in. */}
@@ -433,15 +428,17 @@ function RsvpFields({
         </p>
       </div>
 
+      </div>
+
       {error && (
         <p id={`${uid}-err`} role="alert" className="reply-error">
           {error.text}
         </p>
       )}
 
-      <div className="reply-send" ref={sendRef}>
+      <div className="reply-send">
         <button type="submit" className="send-button btn-3d" disabled={submitting || disabled}>
-          {submitting ? "Sending…" : info.rsvpStatus || initial ? "Update my RSVP" : "Send RSVP"}
+          {submitting ? "Sending…" : info.rsvpStatus ? "Update my RSVP" : "Send RSVP"}
         </button>
       </div>
     </form>

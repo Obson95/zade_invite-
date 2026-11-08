@@ -115,10 +115,11 @@ describe("rsvp function — open RSVP", () => {
     expect(names).toContain("Rose Saint-Fleur");
   });
 
-  it("second submission updates instead of duplicating", async () => {
+  it("a second RSVP from the same person is refused, not duplicated", async () => {
     await rsvp(req("rsvp", body));
     const res = await rsvp(req("rsvp", { ...body, attending: false }));
-    expect(((await res.json()) as { updated: boolean }).updated).toBe(true);
+    expect(res.status).toBe(409);
+    expect(((await res.json()) as { field: string }).field).toBe("guestName");
     const rose = env.sheets.get("Guests")!.data.filter((r) => r[1] === "Rose Saint-Fleur");
     expect(rose).toHaveLength(1);
   });

@@ -83,6 +83,12 @@ export default async (req: Request): Promise<Response> => {
         });
       case "rate_limited":
         return json(req, 429, { ok: false, error: "Too many attempts. Please wait a few minutes and try again." });
+      case "duplicate":
+        return json(req, 409, {
+          ok: false,
+          field: "guestName",
+          error: "Looks like this name has already RSVP’d. If you need to change your reply, please contact Obson & Maelle.",
+        });
       default:
         console.error("RSVP backend rejected request:", r.code ?? "unknown");
         return json(req, 502, { ok: false, error: "We couldn't save your RSVP. Please try again shortly." });

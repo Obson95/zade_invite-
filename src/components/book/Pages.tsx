@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef, type CSSProperties, type ReactNode } from "react";
 import { covers, type BookPage } from "../../config/book";
 import { event } from "../../config/event";
-import { buildIcsHref, getEventDisplay } from "../../lib/event-display";
+import { calendarLink, getEventDisplay } from "../../lib/event-display";
 import type { InviteTokenState } from "../../lib/invite-token";
 import type { Face } from "../../lib/book-model";
 import { Countdown } from "../Countdown";
@@ -47,7 +47,7 @@ function Heading({ page, children }: { page: BookPage; children?: ReactNode }) {
 
 function Details() {
   const d = getEventDisplay(event);
-  const ics = buildIcsHref(event, d);
+  const cal = calendarLink(event, d);
   const rows: [string, ReactNode][] = [
     ["Date", d.dateLabel],
     ["Time", d.timeLabel],
@@ -66,10 +66,10 @@ function Details() {
           </div>
         ))}
       </dl>
-      {d.mapUrl || ics || event.contactEmail ? (
+      {d.mapUrl || cal || event.contactEmail ? (
         <p className="party-links">
           {d.mapUrl ? <a href={d.mapUrl} target="_blank" rel="noopener noreferrer">Directions<span className="sr-only"> (opens in a new tab)</span></a> : null}
-          {ics ? <a href={ics} download="zade-first-birthday.ics">Add to calendar</a> : null}
+          {cal ? <a href={cal.href} {...(cal.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}>Add to calendar</a> : null}
           {event.contactEmail ? <a href={`mailto:${event.contactEmail}`}>{event.contactEmail}</a> : null}
         </p>
       ) : null}

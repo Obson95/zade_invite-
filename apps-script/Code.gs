@@ -641,7 +641,25 @@ function rsvpClosed_(s, now) {
 var PUBLIC_DEFAULT_MAX_PARTY = 10;
 
 function normName_(n) {
-  return String(n || '').replace(/^'/, '').trim().replace(/\s+/g, ' ').toLowerCase();
+  return String(n || '').replace(/^'/, '').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[-.,_']+/g, ' ').trim().replace(/\s+/g, ' ').toLowerCase();
+}
+
+/**
+ * Pure rule (unit-tested): one RSVP per person. Returns the index of a row
+ * that has already replied with this name (ignoring case, spacing, accents
+ * and punctuation) or this email, else -1.
+ */
+function findDuplicate_(guests, email, name) {
+  var e = String(email || '').trim().toLowerCase();
+  var n = normName_(name);
+  for (var i = 0; i < guests.length; i++) {
+    var g = guests[i];
+    if (!String(g.rsvp_status || '').trim()) continue;
+    if (normName_(g.guest_name) === n) return i;
+    if (e && String(g.email || '').trim().toLowerCase() === e) return i;
+  }
+  return -1;
 }
 
 /**
@@ -684,6 +702,11 @@ function handlePublicRsvp_(req, cache) {
   if (!lock.tryLock(15000)) return { ok: false, code: 'busy' };
   try {
     var d = readGuests_();
+    // Checked inside the lock, so two people sending the same name at the same moment can't both get in.
+    if (findDuplicate_(d.guests, email, name) !== -1) {
+      audit_('rsvp_web', '', 'duplicate refused');
+      return { ok: false, code: 'duplicate' };
+    }
     var idx = findPublicMatch_(d.guests, email, name);
     var existing = idx === -1 ? {} : d.guests[idx];
     var r = applyRsvp_(existing, req, defaultMax, now);

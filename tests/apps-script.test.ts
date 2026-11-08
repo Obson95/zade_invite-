@@ -180,20 +180,27 @@ describe("Code.gs open RSVPs", () => {
     expect(String(r[1].guest_id)).toMatch(/^W-/);
   });
 
-  it("re-submitting with the same email updates the same row", () => {
+  it("refuses a second RSVP with the same email", () => {
     pub({ email: "marie@example.com" });
-    expect(pub({ email: "marie@example.com", attending: false, partySize: 0 })).toEqual({ ok: true, updated: true });
+    expect(pub({ guestName: "Someone Else", email: "MARIE@example.com", attending: false, partySize: 0 })).toEqual({ ok: false, code: "duplicate" });
     const r = rows(env);
     expect(r).toHaveLength(2);
-    expect(r[1]).toMatchObject({ rsvp_status: "no", party_size: 0 });
+    expect(r[1]).toMatchObject({ rsvp_status: "yes", party_size: 2 });
   });
 
-  it("without email, the same name updates the earlier web RSVP", () => {
+  it("refuses a second RSVP with the same name, however it is typed", () => {
     pub({});
-    pub({ guestName: "  marie   JOSEPH ", partySize: 3 });
+    expect(pub({ guestName: "  marie   JOSEPH ", partySize: 3 })).toEqual({ ok: false, code: "duplicate" });
+    expect(pub({ guestName: "Marié-Joseph", email: "other@example.com" })).toEqual({ ok: false, code: "duplicate" });
     const r = rows(env);
     expect(r).toHaveLength(2);
-    expect(r[1].party_size).toBe(3);
+    expect(r[1].party_size).toBe(2);
+  });
+
+  it("different people can both reply", () => {
+    expect(pub({ guestName: "Marie Joseph" })).toEqual({ ok: true, updated: false });
+    expect(pub({ guestName: "Marie Josephine" })).toEqual({ ok: true, updated: false });
+    expect(rows(env)).toHaveLength(3);
   });
 
   it("an existing guest's email matches their row (no duplicate)", () => {
