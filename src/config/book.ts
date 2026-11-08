@@ -67,11 +67,14 @@ export type BookPage =
   | (PageBase & { kind: "rsvp"; intro: string });
 
 /** A photo from public/images/photos, made by scripts/prepare-media.py. */
+const PHOTO_VERSION = 2;
+
 /** Show the whole photo, uncropped, inside the print. */
 const whole = (slot: PhotoSlot): PhotoSlot => ({ ...slot, fit: "contain" });
 
 const photo = (name: string, width: number, height: number, alt: string, caption = "", focus?: string): PhotoSlot => ({
-  src: `/images/photos/${name}.webp`, alt, caption, width, height, focus,
+  // Bump PHOTO_VERSION after replacing a photo so phones don't keep showing the old one.
+  src: `/images/photos/${name}.webp?v=${PHOTO_VERSION}`, alt, caption, width, height, focus,
 });
 
 export const covers = {
