@@ -35,11 +35,12 @@ PHOTO_FILES = {
     "New_first_smile .heic": "first-smile",
     "new_find_his_feet.jpg": "finding-his-feet",
     "whole_year_2.JPG": "one-whole-year",
-    "whole_year.JPG": "playtime",
+    "New_playing_time .jpg": "playtime",
     "favoraite_food.heic": "favorite-food",
     "New_nap_time .heic": "nap-time",
     "favorite_person.jpeg": "favorite-person",
     "mom_dad.JPEG": "mom-and-dad",
+    "Swagg_new.jpeg": "all-dressed-up",
 }
 # original file -> (web name, seconds to keep or None for all)
 # first_step.mov ends with a CapCut outro from about 20.53s, so it stops at 20.5s.
