@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef, useState, type FormEvent } from "react";
 import { event } from "../config/event";
-import { getEventDisplay } from "../lib/event-display";
+import { buildIcsHref, getEventDisplay } from "../lib/event-display";
 import type { InviteTokenState } from "../lib/invite-token";
 import {
   DEFAULT_PUBLIC_MAX_PARTY,
@@ -41,7 +41,10 @@ type Phase =
   | { s: "loading" }
   | { s: "error"; message: string }
   | { s: "ready"; info: InviteInfo }
-  | { s: "done"; info: InviteInfo; attending: boolean; partySize: number; name: string };
+  /** Shown the moment Send is pressed; `saved` flips once the sheet confirms. */
+  | { s: "done"; info: InviteInfo; attending: boolean; name: string; saved: boolean };
+
+type SendResult = { ok: true } | { ok: false; text: string; field?: string };
 
 async function postJson<T>(url: string, body: unknown): Promise<{ status: number; data: T | null }> {
   const res = await fetch(url, {
@@ -60,11 +63,11 @@ async function postJson<T>(url: string, body: unknown): Promise<{ status: number
   return { status: res.status, data };
 }
 
-function Shell({ children }: { children: React.ReactNode }) {
+function Shell({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section id="rsvp" aria-labelledby="rsvp-title" className="reply-card">
       <p className="reply-kicker">Reply card</p>
-      <h3 id="rsvp-title">Will you come to Zade’s party?</h3>
+      <h3 id="rsvp-title">{title}</h3>
       {children}
     </section>
   );
@@ -76,6 +79,33 @@ export function RsvpForm({ invite, intro }: { invite: InviteTokenState; intro: s
   const mode: Mode = invite.kind === "token" ? "invite" : invite.kind === "preview" ? "preview" : "public";
   const [phase, setPhase] = useState<Phase>(() => (token ? { s: "loading" } : { s: "ready", info: publicInfo() }));
   const [draft, setDraft] = useState<Draft | null>(null);
+  const [sendError, setSendError] = useState<{ text: string; field?: string } | null>(null);
+  const sending = useRef(0);
+
+  // The thank-you shows at once; the sheet takes a few seconds to confirm.
+  // If saving fails, the form comes back, filled in, with the reason.
+  async function send(body: Record<string, unknown>, d: Draft, info: InviteInfo): Promise<SendResult> {
+    const id = ++sending.current;
+    setDraft(d);
+    setSendError(null);
+    setPhase({ s: "done", info, attending: !!d.attending, name: info.guestName || d.guestName, saved: false });
+    let result: SendResult;
+    try {
+      const { status, data } = await postJson<{ ok: boolean; error?: string; field?: string }>("/.netlify/functions/rsvp", body);
+      result = status === 200 && data?.ok ? { ok: true } : { ok: false, text: data?.error || "We couldn't save your RSVP. Please try again.", field: data?.field };
+    } catch {
+      result = { ok: false, text: "We couldn't reach the RSVP service. Please check your connection and try again." };
+    }
+    if (id !== sending.current) return result;
+    if (result.ok) {
+      const status = d.attending ? "yes" : "no";
+      setPhase({ s: "done", info: { ...info, rsvpStatus: status, partySize: d.attending ? 1 : 0 }, attending: !!d.attending, name: info.guestName || d.guestName, saved: true });
+    } else {
+      setSendError({ text: result.text, field: result.field });
+      setPhase({ s: "ready", info });
+    }
+    return result;
+  }
 
   useEffect(() => {
     if (!token) return;
@@ -107,8 +137,9 @@ export function RsvpForm({ invite, intro }: { invite: InviteTokenState; intro: s
   // A personal link that failed lookup falls back to the public form.
   const effectiveMode: Mode = mode === "invite" && phase.s === "ready" && !phase.info.guestName ? "public" : mode;
 
+  const title = phase.s !== "done" ? "Will you come to Zade’s party?" : phase.attending ? "See you at the party!" : "We’ll miss you!";
   return (
-    <Shell>
+    <Shell title={title}>
       {phase.s !== "done" && (
         <p className="reply-by">Please reply by {deadlineLabel || "[TBD]"}. {intro}</p>
       )}
@@ -133,24 +164,19 @@ export function RsvpForm({ invite, intro }: { invite: InviteTokenState; intro: s
             mode={effectiveMode}
             token={effectiveMode === "invite" ? token : null}
             initial={draft}
-            onDone={(d) => {
-              setDraft(d);
-              const partySize = d.attending ? d.partySize : 0;
-              setPhase({
-                s: "done",
-                info: { ...phase.info, rsvpStatus: d.attending ? "yes" : "no", partySize },
-                attending: !!d.attending,
-                partySize,
-                name: phase.info.guestName || d.guestName,
-              });
-            }}
+            initialError={sendError}
+            onSend={(body, d) => send(body, d, phase.info)}
           />
         )}
         {phase.s === "done" && (
           <Confirmation
             name={phase.name}
             attending={phase.attending}
-            onChange={() => setPhase({ s: "ready", info: phase.info })}
+            saved={phase.saved}
+            onChange={() => {
+              sending.current++;
+              setPhase({ s: "ready", info: phase.info });
+            }}
           />
         )}
       </div>
@@ -158,19 +184,41 @@ export function RsvpForm({ invite, intro }: { invite: InviteTokenState; intro: s
   );
 }
 
-function Confirmation({ name, attending, onChange }: { name: string; attending: boolean; onChange: () => void }) {
+function Confirmation({ name, attending, saved, onChange }: { name: string; attending: boolean; saved: boolean; onChange: () => void }) {
   const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => ref.current?.focus({ preventScroll: true }), []);
+  useEffect(() => {
+    ref.current?.focus({ preventScroll: true });
+    ref.current?.closest(".page")?.scrollTo({ top: 0 });
+  }, []);
+  const d = getEventDisplay(event);
+  const ics = buildIcsHref(event, d);
+  const first = name.trim().split(/\s+/)[0];
   return (
-    <div ref={ref} tabIndex={-1} className="rsvp-confirmation">
-      <img className="reply-flight" src="/images/book/balloon.webp" alt="" />
+    <div ref={ref} tabIndex={-1} className={`rsvp-confirmation ${attending ? "is-yes" : "is-no"}`}>
+      {attending ? <img className="reply-flight" src="/images/book/balloon.webp" alt="" /> : null}
       <div className="thank-you-note">
-        <p className="thank-you-head">{attending ? "We’ll save you a place." : "We’ll miss you."}</p>
-        <p>
-          Thank you{name ? `, ${name.split(" ")[0]}` : ""}.{" "}
-          {attending
-            ? "Your RSVP is saved. We can’t wait to see you."
-            : "Your reply is saved. Thank you for letting us know."}
+        <img className="thank-you-crown" src="/images/book/crown.webp" alt="" />
+        <p className="thank-you-head">Thank you{first ? `, ${first}` : ""}!</p>
+        {attending ? (
+          <>
+            <p>Zade is so happy you’re coming. We can’t wait to celebrate his first birthday with you.</p>
+            <dl className="thank-you-details">
+              <div><dt>When</dt><dd>{d.dateLabel}, {d.timeLabel}</dd></div>
+              <div><dt>Where</dt><dd>{[event.venueName, event.venueAddress].filter(Boolean).join(", ")}</dd></div>
+              {event.dressCode ? <div><dt>Wear</dt><dd>{event.dressCode}</dd></div> : null}
+            </dl>
+            {ics || d.mapUrl ? (
+              <p className="thank-you-links">
+                {ics ? <a className="btn-3d thank-you-button" href={ics} download="zade-first-birthday.ics">Add to calendar</a> : null}
+                {d.mapUrl ? <a href={d.mapUrl} target="_blank" rel="noopener noreferrer">Directions<span className="sr-only"> (opens in a new tab)</span></a> : null}
+              </p>
+            ) : null}
+          </>
+        ) : (
+          <p>Thank you for letting us know. We’ll miss you, and Zade sends you a big hug.</p>
+        )}
+        <p className={`thank-you-status ${saved ? "is-saved" : ""}`} role="status">
+          {saved ? "✓ Your reply is saved." : "Saving your reply…"}
         </p>
         <button type="button" onClick={onChange} className="change-reply">Change my response</button>
       </div>
@@ -183,13 +231,15 @@ function RsvpFields({
   mode,
   token,
   initial,
-  onDone,
+  initialError,
+  onSend,
 }: {
   info: InviteInfo;
   mode: Mode;
   token: string | null;
   initial: Draft | null;
-  onDone: (d: Draft) => void;
+  initialError: { text: string; field?: string } | null;
+  onSend: (body: Record<string, unknown>, d: Draft) => Promise<SendResult>;
 }) {
   const uid = useId();
   const [guestName, setGuestName] = useState(initial?.guestName ?? "");
@@ -203,10 +253,11 @@ function RsvpFields({
   const [dietary, setDietary] = useState(initial?.dietary ?? "");
   const [honeypot, setHoneypot] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<{ text: string; field?: string } | null>(null);
+  const [error, setError] = useState<{ text: string; field?: string } | null>(initialError);
   const inFlight = useRef(false);
   const openedAt = useRef(Date.now());
   const nameRef = useRef<HTMLInputElement>(null);
+  const sendRef = useRef<HTMLDivElement>(null);
   const isPublic = mode === "public";
   const disabled = mode === "preview" || info.closed || (mode === "invite" && !token);
 
@@ -225,25 +276,14 @@ function RsvpFields({
     inFlight.current = true;
     setSubmitting(true);
     setError(null);
-    try {
-      const body: Record<string, unknown> = isPublic
-        ? { guestName: guestName.trim(), attending, website: honeypot, formMs: Date.now() - openedAt.current }
-        : { inviteToken: token, attending };
-      if (isPublic && email.trim()) body.email = email.trim();
-      if (message.trim()) body.message = message.trim();
-      if (attending && event.askDietaryNotes && dietary.trim()) body.dietaryNotes = dietary.trim();
-      const { status, data } = await postJson<{ ok: boolean; error?: string; field?: string }>("/.netlify/functions/rsvp", body);
-      if (status === 200 && data?.ok) {
-        onDone({ guestName: guestName.trim(), email: email.trim(), attending, partySize, message, dietary });
-      } else {
-        setError({ text: data?.error || "We couldn't save your RSVP. Please try again.", field: data?.field });
-      }
-    } catch {
-      setError({ text: "We couldn't reach the RSVP service. Please check your connection and try again." });
-    } finally {
-      inFlight.current = false;
-      setSubmitting(false);
-    }
+    const body: Record<string, unknown> = isPublic
+      ? { guestName: guestName.trim(), attending, website: honeypot, formMs: Date.now() - openedAt.current }
+      : { inviteToken: token, attending };
+    if (isPublic && email.trim()) body.email = email.trim();
+    if (message.trim()) body.message = message.trim();
+    if (attending && event.askDietaryNotes && dietary.trim()) body.dietaryNotes = dietary.trim();
+    // This form is replaced by the thank-you straight away; it only comes back if saving fails.
+    await onSend(body, { guestName: guestName.trim(), email: email.trim(), attending, partySize, message, dietary });
   }
 
   const choice = (value: boolean, label: string, sub: string) => {
@@ -257,6 +297,11 @@ function RsvpFields({
           onChange={() => {
             setAttending(value);
             if (error?.field === "attending") setError(null);
+            // Bring the Send button (at the bottom of the page) into view.
+            requestAnimationFrame(() => {
+              const page = sendRef.current?.closest(".page");
+              page?.scrollTo({ top: page.scrollHeight, behavior: "smooth" });
+            });
           }}
           disabled={disabled}
           aria-describedby={error?.field === "attending" ? `${uid}-err` : undefined}
@@ -394,7 +439,7 @@ function RsvpFields({
         </p>
       )}
 
-      <div className="reply-send">
+      <div className="reply-send" ref={sendRef}>
         <button type="submit" className="send-button btn-3d" disabled={submitting || disabled}>
           {submitting ? "Sending…" : info.rsvpStatus || initial ? "Update my RSVP" : "Send RSVP"}
         </button>

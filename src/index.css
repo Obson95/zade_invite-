@@ -336,7 +336,9 @@ a { color: inherit; }
 .signature { font: 400 2.5em/1.2 var(--font-script); }
 
 /* ── Page 8: the reply card ─────────────────────────────────────────── */
-.page-rsvp > div { padding: 4% 6.5% 2.2em; display: flex; align-items: flex-start; justify-content: center; }
+.page-rsvp { -webkit-overflow-scrolling: touch; }
+/* Room below the card so Send (and its raised edge) can scroll fully into view. */
+.page-rsvp > div { padding: 4% 6.5% 3.6em; display: flex; align-items: flex-start; justify-content: center; }
 .rsvp-wash { left: -24%; top: 30%; width: 96%; }
 .reply-card { position: relative; z-index: 2; width: 100%; padding: 1.15em 1.3em 1.2em; background: #fffdf8; border: 1px solid var(--ink); outline: 1px solid var(--gold); outline-offset: -5px; box-shadow: 0 8px 14px -9px rgb(31 42 68 / .36); font-size: .95em; }
 .reply-kicker { font-size: .74em; letter-spacing: .15em; text-transform: uppercase; color: var(--gold-text); }
@@ -370,11 +372,21 @@ fieldset.field { border: 0; padding: 0; min-width: 0; margin-inline: 0; }
 .send-button:disabled { background: #e6e1d6; color: #565a66; cursor: not-allowed; box-shadow: 0 3px 0 #c9c2b2; }
 .send-button:disabled::after { display: none; }
 .honeypot { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
-.rsvp-confirmation { position: relative; margin-top: 1em; min-height: 12em; }
-.reply-flight { position: absolute; right: 8%; bottom: 0; width: 5.5em; opacity: 0; pointer-events: none; animation: balloon-away 4.2s .2s ease-in both; }
-.thank-you-note { position: relative; animation: note-arrives 1.6s 2s ease-out both; }
-.thank-you-head { font: 500 1.65em/1.15 var(--font-title); margin-bottom: .2em; }
-.change-reply { margin-top: .7em; min-height: 44px; text-decoration: underline; text-underline-offset: .22em; }
+.rsvp-confirmation { position: relative; margin-top: .8em; }
+.reply-flight { position: absolute; right: 2%; top: -1em; width: 4.2em; opacity: 0; pointer-events: none; animation: balloon-away 4.2s .3s ease-in both; }
+.thank-you-note { position: relative; animation: note-arrives .5s ease-out both; }
+.thank-you-crown { width: 3em; margin-bottom: .3em; transform: rotate(-6deg); animation: crown-bounce .9s .15s cubic-bezier(.3, 1.5, .5, 1) both; }
+.thank-you-head { font: 500 1.75em/1.15 var(--font-title); margin-bottom: .35em; }
+.thank-you-details { margin-top: .9em; border-top: 1px solid rgb(143 115 56 / .45); }
+.thank-you-details > div { display: grid; grid-template-columns: 4.2em 1fr; gap: .6em; padding: .5em 0; border-bottom: 1px solid rgb(143 115 56 / .45); }
+.thank-you-details dt { padding-top: .2em; font-size: .74em; letter-spacing: .12em; text-transform: uppercase; color: var(--gold-text); }
+.thank-you-details dd { font: 500 1.08em/1.25 var(--font-title); }
+.thank-you-links { display: flex; flex-wrap: wrap; align-items: center; gap: .6em 1.2em; margin-top: 1em; }
+.thank-you-links a:not(.btn-3d) { min-height: 44px; display: inline-flex; align-items: center; font-weight: 500; text-underline-offset: .22em; }
+.thank-you-button { padding: .6em 1.1em; margin-bottom: 5px; text-decoration: none; }
+.thank-you-status { margin-top: 1em; font-size: .9em; color: var(--ink-soft); font-style: italic; }
+.thank-you-status.is-saved { color: #2f6b3a; font-style: normal; font-weight: 500; }
+.change-reply { margin-top: .3em; min-height: 44px; text-decoration: underline; text-underline-offset: .22em; }
 
 /* ── Toolbar and contents ───────────────────────────────────────────── */
 .toolbar { position: relative; z-index: 20; display: flex; align-items: center; justify-content: center; gap: .25rem; padding: .25rem max(.5rem, env(safe-area-inset-left)) calc(.25rem + env(safe-area-inset-bottom)); font-size: 15px; }
@@ -494,6 +506,7 @@ fieldset.field { border: 0; padding: 0; min-width: 0; margin-inline: 0; }
   78% { opacity: 1; }
   100% { opacity: 0; transform: translate(2.2em, -20em) rotate(7deg); }
 }
+@keyframes crown-bounce { from { opacity: 0; transform: translateY(.8em) rotate(-6deg) scale(.5); } to { opacity: 1; transform: translateY(0) rotate(-6deg) scale(1); } }
 @keyframes note-arrives { from { opacity: 0; transform: translateY(.6em); } to { opacity: 1; transform: translateY(0); } }
 
 /* No curl, no drawing, no drifting: pages simply fade, fully finished. */

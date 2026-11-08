@@ -253,14 +253,14 @@ const MIN_TEXT_PX = 11;
 /**
  * Shrinks a page's type (everything on it is sized in em) until it fits
  * without scrolling, so a phone shows the whole page like a printed book.
- * Form fields stay at 16px (so phones don't zoom in); if a page still can't
- * fit, it scrolls.
+ * The reply page is left at full size and scrolls instead, so its form stays
+ * easy to read and tap.
  */
-function useFitPage() {
+function useFitPage(skip: boolean) {
   const ref = useRef<HTMLElement>(null);
   useLayoutEffect(() => {
     const el = ref.current;
-    if (!el) return;
+    if (!el || skip) return;
     let frame = 0;
     const fit = () => {
       // Don't reflow a form under someone's fingers while the keyboard is up.
@@ -286,12 +286,12 @@ function useFitPage() {
       cancelAnimationFrame(frame);
       observer.disconnect();
     };
-  }, []);
+  }, [skip]);
   return ref;
 }
 
 function PageFace({ face, active, invite }: { face: Extract<Face, { kind: "page" }>; active: boolean; invite: InviteTokenState }) {
-  const ref = useFitPage();
+  const ref = useFitPage(face.page.kind === "rsvp");
   return (
     <article className={`page page-${face.page.kind}`} ref={ref}>
       <PageBody page={face.page} active={active} invite={invite} />
