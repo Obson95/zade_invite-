@@ -66,10 +66,11 @@ function Details() {
           </div>
         ))}
       </dl>
-      {d.mapUrl || cal || event.contactEmail ? (
+      {d.mapUrl || cal || event.registryUrl || event.contactEmail ? (
         <p className="party-links">
           {d.mapUrl ? <a href={d.mapUrl} target="_blank" rel="noopener noreferrer">Directions<span className="sr-only"> (opens in a new tab)</span></a> : null}
           {cal ? <a href={cal.href} {...(cal.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}>Add to calendar</a> : null}
+          {event.registryUrl ? <a href={event.registryUrl} target="_blank" rel="noopener noreferrer">Gift registry<span className="sr-only"> (opens in a new tab)</span></a> : null}
           {event.contactEmail ? <a href={`mailto:${event.contactEmail}`}>{event.contactEmail}</a> : null}
         </p>
       ) : null}

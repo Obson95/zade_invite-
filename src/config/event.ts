@@ -42,6 +42,8 @@ export interface EventConfig {
   maxGuestsPerInvite: number | null;
   /** Shown as "Questions? Contact …". Optional. */
   contactEmail: string | null;
+  /** Optional gift registry link. null hides it. */
+  registryUrl: string | null;
   /** Show a dietary-notes field on the RSVP form. */
   askDietaryNotes: boolean;
   music: {
@@ -67,6 +69,7 @@ export const event: EventConfig = {
   rsvpClosesOn: "2026-11-22", // late replies are welcome up to the party
   maxGuestsPerInvite: null, // TBD — e.g. 4
   contactEmail: null, //    TBD (optional)
+  registryUrl: "https://www.amazon.com/baby-reg/zade-saint-fleur-november-2026-bellmawr/2AM2YC42KUN7A",
 
   askDietaryNotes: false,
   music: { src: null, title: null },
