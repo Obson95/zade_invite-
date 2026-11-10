@@ -269,11 +269,20 @@ function useFitPage(skip: boolean) {
     const fit = () => {
       // Don't reflow a form under someone's fingers while the keyboard is up.
       if (el.contains(document.activeElement) && document.activeElement?.matches("input, textarea, select")) return;
-      el.style.fontSize = "";
-      let size = parseFloat(getComputedStyle(el).fontSize);
-      while (el.scrollHeight > el.clientHeight + 1 && size > MIN_TEXT_PX) {
-        size = Math.max(MIN_TEXT_PX, size - 0.5);
-        el.style.fontSize = `${size}px`;
+      const shrink = () => {
+        el.style.fontSize = "";
+        let size = parseFloat(getComputedStyle(el).fontSize);
+        while (el.scrollHeight > el.clientHeight + 1 && size > MIN_TEXT_PX) {
+          size = Math.max(MIN_TEXT_PX, size - 0.5);
+          el.style.fontSize = `${size}px`;
+        }
+      };
+      el.classList.remove("is-tight");
+      shrink();
+      // Still spilling over on a short phone screen: tighten the spacing too.
+      if (el.scrollHeight > el.clientHeight + 1) {
+        el.classList.add("is-tight");
+        shrink();
       }
     };
     const schedule = () => {
