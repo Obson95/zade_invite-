@@ -201,7 +201,7 @@ function Confirmation({ name, attending }: { name: string; attending: boolean })
               <p className="thank-you-links">
                 {cal ? <a className="btn-3d thank-you-button" href={cal.href} {...(cal.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}>Add to calendar</a> : null}
                 {d.mapUrl ? <a href={d.mapUrl} target="_blank" rel="noopener noreferrer">Directions<span className="sr-only"> (opens in a new tab)</span></a> : null}
-                {event.registryUrl ? <a href={event.registryUrl} target="_blank" rel="noopener noreferrer">Gift registry<span className="sr-only"> (opens in a new tab)</span></a> : null}
+                {event.registryUrl ? <a className="btn-3d registry-button" href={event.registryUrl} target="_blank" rel="noopener noreferrer">Gift registry<span className="sr-only"> (opens in a new tab)</span></a> : null}
               </p>
             ) : null}
           </>
