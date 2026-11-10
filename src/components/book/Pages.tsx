@@ -269,10 +269,21 @@ function useFitPage(skip: boolean) {
     const fit = () => {
       // Don't reflow a form under someone's fingers while the keyboard is up.
       if (el.contains(document.activeElement) && document.activeElement?.matches("input, textarea, select")) return;
+      // iPhone browsers don't grow the inner sheet to its content, so scrollHeight can
+      // say "fits" while the bottom is clipped. Also check where the last block ends.
+      const overflows = () => {
+        if (el.scrollHeight > el.clientHeight + 1) return true;
+        const inner = el.firstElementChild as HTMLElement | null;
+        if (!inner) return false;
+        const limit = inner.clientHeight - parseFloat(getComputedStyle(inner).paddingBottom) + 1;
+        return [...inner.children].some(
+          (c) => c instanceof HTMLElement && getComputedStyle(c).position !== "absolute" && c.offsetTop + c.offsetHeight > limit,
+        );
+      };
       const shrink = () => {
         el.style.fontSize = "";
         let size = parseFloat(getComputedStyle(el).fontSize);
-        while (el.scrollHeight > el.clientHeight + 1 && size > MIN_TEXT_PX) {
+        while (overflows() && size > MIN_TEXT_PX) {
           size = Math.max(MIN_TEXT_PX, size - 0.5);
           el.style.fontSize = `${size}px`;
         }
@@ -280,7 +291,7 @@ function useFitPage(skip: boolean) {
       el.classList.remove("is-tight");
       shrink();
       // Still spilling over on a short phone screen: tighten the spacing too.
-      if (el.scrollHeight > el.clientHeight + 1) {
+      if (overflows()) {
         el.classList.add("is-tight");
         shrink();
       }
