@@ -404,6 +404,18 @@ fieldset.field { border: 0; padding: 0; min-width: 0; margin-inline: 0; }
 .thank-you-links a:not(.btn-3d) { min-height: 44px; display: inline-flex; align-items: center; font-weight: 500; text-underline-offset: .22em; }
 .thank-you-button { padding: .6em 1.1em; margin-bottom: 5px; text-decoration: none; }
 .registry-button, .party-links .registry-button { display: inline-flex; align-items: center; min-height: 44px; padding: 0 .95em; margin-bottom: 5px; text-decoration: none; color: #fff; }
+/* Same raised look, but the glint is painted into the background instead of a clipped
+   moving layer: iPhone Safari can drop a clipped, animated layer on a 3D-turned page. */
+.registry-button {
+  overflow: visible;
+  background:
+    linear-gradient(105deg, transparent 35%, rgb(255 255 255 / .38) 50%, transparent 65%) no-repeat,
+    linear-gradient(to bottom, #3a4b74, var(--ink) 58%);
+  background-size: 250% 100%, 100% 100%;
+  background-position: 130% 0, 0 0;
+  animation: glint-paint 4.5s 1.5s ease-in-out infinite;
+}
+.registry-button::after { content: none; }
 .thank-you-status { margin-top: 1em; font-size: .9em; color: var(--ink-soft); font-style: italic; }
 .thank-you-status.is-saved { color: #2f6b3a; font-style: normal; font-weight: 500; }
 .thank-you-change { margin-top: .4em; font-size: .88em; color: var(--ink-soft); }
@@ -517,6 +529,7 @@ fieldset.field { border: 0; padding: 0; min-width: 0; margin-inline: 0; }
   45% { opacity: 1; }
   100% { opacity: 1; transform: translateY(0) scale(1); }
 }
+@keyframes glint-paint { 0%, 70% { background-position: 130% 0, 0 0; } 100% { background-position: -30% 0, 0 0; } }
 @keyframes glint { 0%, 70% { translate: -120% 0; } 100% { translate: 120% 0; } }
 @keyframes nudge { 0%, 70%, 100% { translate: 0 0; } 80% { translate: 0 -4px; } 90% { translate: 0 1px; } }
 @keyframes ink-draws { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
